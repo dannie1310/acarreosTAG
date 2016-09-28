@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -20,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,7 +34,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
-import mx.grupohi.acarreostag.MD5;
 
 /**
  * Pantalla de Login por medio de datos de Intranet.
@@ -45,6 +44,9 @@ public class MainActivity extends AppCompatActivity  {
 
     DBScaSqlite db_sca;
     SQLiteDatabase db;
+    User user;
+    Camion camion;
+    Tag tag;
 
     // Referencias UI.
     private AutoCompleteTextView mUsuarioView;
@@ -64,6 +66,11 @@ public class MainActivity extends AppCompatActivity  {
 
         formLayout = (TextInputLayout) findViewById(R.id.layout);
         mIniciarSesionButton = (Button) findViewById(R.id.iniciar_sesion_button);
+
+        user = new User(this);
+        camion = new Camion(this);
+        tag = new Tag(this);
+
         mIniciarSesionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,15 +83,14 @@ public class MainActivity extends AppCompatActivity  {
         });
 
         db_sca = new DBScaSqlite(this, "sca", null, 1);
-
         configuracionTAG = new Intent(this, ConfTAG.class);
-
     }
 
     @Override
     protected void onStart() {
+
         super.onStart();
-        if(isAuth()) {
+        if(user.get()) {
             startActivity(configuracionTAG);
         }
     }
@@ -97,18 +103,6 @@ public class MainActivity extends AppCompatActivity  {
             if(netInfos != null)
                 if(netInfos.isConnected())
                     return true;
-        }
-        return false;
-    }
-
-    private boolean isAuth() {
-        db = db_sca.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT iduser, nombre, usr, pass, idproyecto, base_datos, descripcion_database FROM user limit 1 ", null);
-        if (c != null) {
-            if (c.moveToFirst()) {
-                c.close();
-                return true;
-            }
         }
         return false;
     }
@@ -160,9 +154,9 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void deleteAllTables() {
-        db.execSQL("DELETE FROM user;");
-        db.execSQL("DELETE FROM camiones;");
-        db.execSQL("DELETE FROM tags;");
+        user.deleteAll();
+        camion.deleteAll();
+        tag.deleteAll();
     }
 
     /**
@@ -203,9 +197,47 @@ public class MainActivity extends AppCompatActivity  {
                     errorLayout(formLayout, (String) JSON.get("error"));
                     return false;
                 } else {
-                    db = db_sca.getWritableDatabase();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressDialog.setTitle("Actualizando");
+                            mProgressDialog.setMessage("Actualizando datos de usuario...");
+                        }
+                    });
+                    Boolean value = false;
+                    ContentValues data = new ContentValues();
 
-                    return true;
+                    data.put("idusuario", (String) JSON.get("IdUsuario"));
+                    data.put("nombre", (String) JSON.get("Nombre"));
+                    data.put("usr", mUsuario);
+                    data.put("pass", mPassword);
+                    data.put("idproyecto", (String) JSON.get("IdProyecto"));
+                    data.put("base_datos", (String) JSON.get("base_datos"));
+                    data.put("descripcion_database", (String) JSON.get("descripcion_database"));
+
+                    value = user.create(data);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressDialog.setMessage("Actualizando catálogo de camiones...");
+                        }
+                    });
+                    JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
+                    Log.i("CAMIONES LENGTH", String.valueOf(camiones.length()));
+                    for (int i = 0; i < camiones.length(); i++) {
+                        value = camion.create(camiones.getJSONObject(i));
+                        Log.i("i", String.valueOf(i));
+                    }
+
+                    JSONArray tags = new JSONArray(JSON.getString("tags"));
+                    Log.i("TAGS LENGTH", String.valueOf(tags.length()));
+                    for (int i = 0; i < tags.length(); i++) {
+                        value = tag.create(tags.getJSONObject(i));
+                        Log.i("i", String.valueOf(i));
+                    }
+
+                    return value;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -221,6 +253,7 @@ public class MainActivity extends AppCompatActivity  {
             mProgressDialog.dismiss();
             if (aBoolean) {
                 startActivity(configuracionTAG);
+            } else {
             }
         }
 

@@ -13,8 +13,8 @@ import java.security.PublicKey;
 public class DBScaSqlite extends SQLiteOpenHelper {
 
     private String [] queries = new String [] {
-            "CREATE TABLE user (idusuario INTEGER, nombre TEXT, usr TEXT, pass TEXT, idproyecto INTEGER, base_datos TEXT, descripcion_database TEXT)",
-            "CREATE TABLE camiones (idcamion INTEGER, placas TEXT, marca TEXT, modelo TEXT, ancho REAL, largo REAL, alto REAL, economico TEXT)",
+            "CREATE TABLE user (id INTEGER PRIMARY KEY, idusuario INTEGER, nombre TEXT, usr TEXT, pass TEXT, idproyecto INTEGER, base_datos TEXT, descripcion_database TEXT)",
+            "CREATE TABLE camiones (idcamion INTEGER PRIMARY KEY, placas TEXT, marca TEXT, modelo TEXT, ancho REAL, largo REAL, alto REAL, economico TEXT)",
             "CREATE TABLE tags (uid TEXT PRIMARY KEY, idcamion INTEGER, idproyecto INTEGER, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, estado INTEGER DEFAULT 1)"
     };
 
@@ -34,10 +34,14 @@ public class DBScaSqlite extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS user");
         db.execSQL("DROP TABLE IF EXISTS camiones");
         db.execSQL("DROP TABLE IF EXISTS tags");
-        db.execSQL("DROP TABLE IF EXISTS tags");
 
         for (String query : queries) {
             db.execSQL(query);
         }
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
     }
 }
