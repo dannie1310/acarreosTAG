@@ -62,9 +62,18 @@ public class MainActivity extends AppCompatActivity  {
         mUsuarioView = (AutoCompleteTextView) findViewById(R.id.usuario);
         mPasswordView = (EditText) findViewById(R.id.password);
 
-        formLayout = (TextInputLayout) findViewById(R.id.form_layout);
+        formLayout = (TextInputLayout) findViewById(R.id.layout);
         mIniciarSesionButton = (Button) findViewById(R.id.iniciar_sesion_button);
-        mIniciarSesionButton.setOnClickListener(buttonListener);
+        mIniciarSesionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isNetworkStatusAvialable(getApplicationContext())) {
+                    attemptLogin();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.error_internet, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         db_sca = new DBScaSqlite(this, "sca", null, 1);
 
@@ -79,27 +88,6 @@ public class MainActivity extends AppCompatActivity  {
             startActivity(configuracionTAG);
         }
     }
-
-    private View.OnClickListener buttonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (isNetworkStatusAvialable(getApplicationContext())) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            attemptLogin();
-                        } catch (Exception e) {
-                            errorMessage(getString(R.string.error_login));
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-            } else {
-                Toast.makeText(MainActivity.this, R.string.error_internet, Toast.LENGTH_LONG).show();
-            }
-        }
-    };
 
     public static boolean isNetworkStatusAvialable (Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -116,14 +104,14 @@ public class MainActivity extends AppCompatActivity  {
     private boolean isAuth() {
         db = db_sca.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT iduser, nombre, usr, pass, idproyecto, base_datos, descripcion_database FROM user limit 1 ", null);
-        if(c != null) {
+        if (c != null) {
             if (c.moveToFirst()) {
+                c.close();
                 return true;
             }
-        } return false;
+        }
+        return false;
     }
-
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -135,6 +123,7 @@ public class MainActivity extends AppCompatActivity  {
         //Reset Errors
         mUsuarioView.setError(null);
         mPasswordView.setError(null);
+        formLayout.setError(null);
 
         // Store values at the time of the login attempt.
         final String usuario = mUsuarioView.getText().toString();
@@ -143,15 +132,15 @@ public class MainActivity extends AppCompatActivity  {
         boolean cancel = false;
         View focusView = null;
 
-        if(!TextUtils.isEmpty(usuario)) {
-            mUsuarioView.setError(getString(R.string.error_field_required));
-            focusView = mUsuarioView;
+        if(TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
             cancel = true;
         }
 
-        if(!TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
+        if(TextUtils.isEmpty(usuario)) {
+            mUsuarioView.setError(getString(R.string.error_field_required));
+            focusView = mUsuarioView;
             cancel = true;
         }
 
@@ -228,6 +217,7 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            mAuthTask = null;
             mProgressDialog.dismiss();
             if (aBoolean) {
                 startActivity(configuracionTAG);
@@ -245,11 +235,8 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private JSONObject JsonHttp(URL url, ContentValues values) throws JSONException {
-        InputStream is = null;
-        StringBuilder sb = null;
-        String response = "";
-        OutputStream os = null;
 
+        String response = null;
         try {
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -257,7 +244,7 @@ public class MainActivity extends AppCompatActivity  {
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
 
-            os = conn.getOutputStream();
+            OutputStream os = conn.getOutputStream();
 
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             bw.write(getQuery(values));
@@ -267,14 +254,17 @@ public class MainActivity extends AppCompatActivity  {
 
             Log.i("Status Code",String.valueOf(statusCode));
 
-            is = conn.getInputStream();
+            InputStream is = conn.getInputStream();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            sb = new StringBuilder();
-            sb.append(br.readLine() + "\n");
-            String line="0";
+            StringBuilder sb = new StringBuilder();
+            String line, toAppend;
+
+            toAppend = br.readLine() + "\n";
+            sb.append(toAppend);
             while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
+                toAppend = line + "\n";
+                sb.append(toAppend);
             }
 
             is.close();
