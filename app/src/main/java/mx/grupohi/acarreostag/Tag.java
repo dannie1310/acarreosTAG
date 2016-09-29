@@ -35,4 +35,6 @@ public class Tag {
     public void deleteAll() {
         db.execSQL("DELETE FROM tags");
     }
+
+
 }
