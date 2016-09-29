@@ -20,6 +20,7 @@ public class User {
     private static DBScaSqlite db_sca;
 
     private String name;
+    private String proyecto;
 
     public User(Context context) {
         this.context = context;
@@ -46,5 +47,13 @@ public class User {
             name = c.getString(c.getColumnIndex("nombre"));
         }
         return name;
+    }
+
+    public String getProyecto() {
+        Cursor c = db.rawQuery("SELECT descripcion_database FROM user LIMIT 1", null);
+        if (c.moveToFirst()) {
+            proyecto = c.getString(c.getColumnIndex("descripcion_database"));
+        }
+        return proyecto;
     }
 }
