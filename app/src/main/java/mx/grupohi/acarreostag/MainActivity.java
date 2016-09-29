@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -37,6 +38,10 @@ import mx.grupohi.acarreostag.NFCTag;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private Intent loginActivity;
+    private User user;
+
     private static final int N_ITEMS = 10;
     String text;
     Tag myTag;
@@ -53,8 +58,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        spinner = (Spinner) findViewById(R.id.spinner);
-        addItemsSpinnerDinamico();
+        /*spinner = (Spinner) findViewById(R.id.spinner);
+        addItemsSpinnerDinamico();*/
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -73,6 +78,28 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        user = new User(this);
+        loginActivity = new Intent(this, LoginActivity.class);
+
+        drawer.post(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < drawer.getChildCount(); i++) {
+                    View child = drawer.getChildAt(i);
+                    TextView tvp = (TextView) child.findViewById(R.id.textViewProyecto);
+                    TextView tvu = (TextView) child.findViewById(R.id.textViewUser);
+                    if (tvp != null) {
+                        tvp.setText(user.getProyecto());
+                    }
+                    if (tvu != null) {
+                        tvu.setText(user.getName());
+                    }
+                }
+            }
+        });
+
+
         Button btnWrite= (Button) findViewById(R.id.button_write);
         final TextView message = (TextView) findViewById(R.id.texto);
 
@@ -191,50 +218,29 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_logout) {
+            if (isSync()) {
+                user.deleteAll();
+                startActivity(loginActivity);
+            }
+            // CODIGO PARA VERIFICAR QUE SE HAN SINCRONIZADO LOS CAMBIOS EN EL SERVIDOR, SI SE HAN SINCRONIZADO SE CIERRA SESIÓN
+            user.deleteAll();
+        } else if (id == R.id.nav_sync) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private boolean isSync() {
         return true;
     }
 }

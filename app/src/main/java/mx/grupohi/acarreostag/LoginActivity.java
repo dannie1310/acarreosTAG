@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity  {
     private EditText mPasswordView;
     private ProgressDialog mProgressDialog;
     private Button mIniciarSesionButton;
-    Intent configuracionTAG;
+    Intent mainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +95,8 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
     private void nextActivity() {
-        configuracionTAG = new Intent(this, MainActivity.class);
-        configuracionTAG.putExtra("user", user.getName());
-        startActivity(configuracionTAG);
+        mainActivity = new Intent(this, MainActivity.class);
+        startActivity(mainActivity);
     }
     public static boolean isNetworkStatusAvialable (Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
