@@ -23,16 +23,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import mx.grupohi.acarreostag.NFCTag;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int N_ITEMS = 10;
     String text;
     Tag myTag;
     String lectura;
@@ -41,14 +46,16 @@ public class MainActivity extends AppCompatActivity
     IntentFilter writeTagFilters[];
     ViewGroup main;
     boolean writeMode;
-
+    Spinner  spinner ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-       
+        spinner = (Spinner) findViewById(R.id.spinner);
+        addItemsSpinnerDinamico();
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +110,22 @@ public class MainActivity extends AppCompatActivity
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[]{tagDetected};
     }
+
+    private void addItemsSpinnerDinamico() {
+
+            List<String> dynamicList = new ArrayList<String>();
+            for (int i = 0; i < N_ITEMS; i++) {
+                dynamicList.add("item dynamic " + i);
+            }
+
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.content_main, dynamicList);
+            dataAdapter.setDropDownViewResource(R.layout.content_main);
+
+        spinner.setAdapter(dataAdapter);
+
+
+    }
+
     @SuppressLint("NewApi")
     private NdefRecord createRecord(String text) throws UnsupportedEncodingException {
         String lang = "us";
