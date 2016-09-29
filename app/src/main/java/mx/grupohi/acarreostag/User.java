@@ -19,6 +19,8 @@ public class User {
     private static SQLiteDatabase db;
     private static DBScaSqlite db_sca;
 
+    private String name;
+
     public User(Context context) {
         this.context = context;
         db_sca = new DBScaSqlite(context, "sca", null, 1);
@@ -36,5 +38,13 @@ public class User {
     public boolean get() {
         Cursor c = db.rawQuery("SELECT * FROM user", null);
         return c != null && c.moveToFirst();
+    }
+
+    public String getName() {
+        Cursor c = db.rawQuery("SELECT nombre FROM user LIMIT 1", null);
+        if (c.moveToFirst()) {
+            name = c.getString(c.getColumnIndex("nombre"));
+        }
+        return name;
     }
 }
