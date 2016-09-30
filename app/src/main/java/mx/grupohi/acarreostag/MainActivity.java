@@ -138,7 +138,6 @@ public class MainActivity extends AppCompatActivity
                 if(id == "0")  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_LONG).show();
                 } else {
-                    Log.i("IDCAMION", id);
                     checkNfcEnabled();
                     WriteModeOn();
                 }
@@ -152,7 +151,9 @@ public class MainActivity extends AppCompatActivity
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String UID = nfc.idTag(myTag);
-                Toast.makeText(MainActivity.this, "detectado UID: " + UID, Toast.LENGTH_LONG).show();
+
+                //AQUI SE ESCRIBE EN EL TAG
+
             }
         }
     }
