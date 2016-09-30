@@ -1,6 +1,7 @@
 package mx.grupohi.acarreostag;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,9 +43,10 @@ public class MainActivity extends AppCompatActivity
 
     private Intent loginActivity;
     private User user;
-
+    NFCTag nfc;
     private static final int N_ITEMS = 10;
     String text;
+
     Tag myTag;
     String lectura;
     NfcAdapter adapter;
@@ -52,15 +55,15 @@ public class MainActivity extends AppCompatActivity
     ViewGroup main;
     boolean writeMode;
     Spinner  spinner ;
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        /*spinner = (Spinner) findViewById(R.id.spinner);
-        addItemsSpinnerDinamico();*/
 
+        nfc = new NFCTag(myTag, MainActivity.this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity
                     View child = drawer.getChildAt(i);
                     TextView tvp = (TextView) child.findViewById(R.id.textViewProyecto);
                     TextView tvu = (TextView) child.findViewById(R.id.textViewUser);
+
                     if (tvp != null) {
                         tvp.setText(user.getProyecto());
                     }
@@ -98,16 +102,22 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        final ArrayList <String> lista= new ArrayList<String>();
+        lista.add("1");
+        lista.add("2");
 
-
+        spinner = (Spinner) findViewById(R.id.spinner);
+        final ArrayAdapter<String> a = new ArrayAdapter<String>(this,R.layout.text_layout, lista);
+        a.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinner.setAdapter(a);
         Button btnWrite= (Button) findViewById(R.id.button_write);
-        final TextView message = (TextView) findViewById(R.id.texto);
+       // final TextView message = (TextView) findViewById(R.id.texto);
 
         btnWrite.setOnClickListener(new View.OnClickListener() {
-            NFCTag nfc = new NFCTag(myTag, MainActivity.this);
+
             @Override
             public void onClick(View v) {
-                text = message.getText().toString();
+                //text = message.getText().toString();
 
 
                 try {
@@ -115,7 +125,7 @@ public class MainActivity extends AppCompatActivity
                     if (myTag == null) {
                         Toast.makeText(MainActivity.this, "error tag", Toast.LENGTH_LONG).show();
                     } else {
-                        nfc.write(text, myTag);  //escribe mensaje en el Tag
+                       // nfc.write(text, myTag);  //escribe mensaje en el Tag
                         //lectura = nfc.read(myTag);    // lee los datos de la tag*/
                         // lectura=readSector(myTag,3); //lee solo un sector
                         // lectura = idTag(myTag); //muestra el UID de la tarjeta
@@ -136,19 +146,6 @@ public class MainActivity extends AppCompatActivity
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[]{tagDetected};
-    }
-
-    private void addItemsSpinnerDinamico() {
-
-            List<String> dynamicList = new ArrayList<String>();
-            for (int i = 0; i < N_ITEMS; i++) {
-                dynamicList.add("item dynamic " + i);
-            }
-
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.content_main, dynamicList);
-            dataAdapter.setDropDownViewResource(R.layout.content_main);
-
-        spinner.setAdapter(dataAdapter);
 
 
     }
@@ -176,9 +173,11 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressLint("NewApi")
     protected void onNewIntent(Intent intent) {
+        String UID="";
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(MainActivity.this, "detectado", Toast.LENGTH_LONG).show();
+            UID = nfc.idTag(myTag);
+            Toast.makeText(MainActivity.this, "detectado UID: "+UID, Toast.LENGTH_LONG).show();
 
         }
     }
@@ -208,6 +207,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    @TargetApi(Build.VERSION_CODES.DONUT)
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -218,6 +218,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.DONUT)
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

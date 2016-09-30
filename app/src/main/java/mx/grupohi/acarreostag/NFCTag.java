@@ -223,7 +223,7 @@ public class NFCTag {
         }
     }
 
-    private String idTag(Tag tag){
+    String idTag(Tag tag){
 
         byte[] toRead=null;
         byte[] send= new byte[4];
