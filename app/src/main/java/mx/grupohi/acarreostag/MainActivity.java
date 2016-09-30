@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -16,6 +17,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -37,17 +40,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mx.grupohi.acarreostag.NFCTag;
+import mx.grupohi.acarreostag.Tag;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Intent loginActivity;
     private User user;
+    private mx.grupohi.acarreostag.Tag tags;
+    private AlertDialog.Builder alertDialog;
     NFCTag nfc;
     private static final int N_ITEMS = 10;
     String text;
 
-    Tag myTag;
+    android.nfc.Tag myTag;
     String lectura;
     NfcAdapter adapter;
     PendingIntent pendingIntent;
@@ -83,6 +89,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         user = new User(this);
+        tags = new mx.grupohi.acarreostag.Tag(this);
+
         loginActivity = new Intent(this, LoginActivity.class);
 
         drawer.post(new Runnable() {
@@ -226,12 +234,22 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-            if (isSync()) {
+            if (tags.areSynchronized()) {
                 user.deleteAll();
                 startActivity(loginActivity);
+            } else {
+                alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setTitle("Advertencia")
+                        .setMessage("No es posible cerrar la sesión ya que aún no haz sincronizado los tags configurados")
+                        .setPositiveButton("¡Sincronizar Ahora!", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.i("SINCRONIZAR", "YES");
+                            }
+                        })
+                        .setNegativeButton("Cancelar", null)
+                        .show();
             }
-            // CODIGO PARA VERIFICAR QUE SE HAN SINCRONIZADO LOS CAMBIOS EN EL SERVIDOR, SI SE HAN SINCRONIZADO SE CIERRA SESIÓN
-            user.deleteAll();
         } else if (id == R.id.nav_sync) {
 
         }

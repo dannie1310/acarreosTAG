@@ -11,7 +11,7 @@
     <string name="error_internet">Por favor habilite su conexión a Internet para poder iniciar sesión</string>
     <string name="URL">http://sca.grupohi.mx/android20151106.php</string>
     <string name="general_exception">Por favor verifique su conexión a internet e intentelo nuevamente</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Configurar TAG</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

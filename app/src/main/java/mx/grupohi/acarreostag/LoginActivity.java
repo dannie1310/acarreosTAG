@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -226,6 +227,7 @@ public class LoginActivity extends AppCompatActivity  {
                             mProgressDialog.setMessage("Actualizando catálogo de camiones...");
                         }
                     });
+
                     JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
                     Log.i("CAMIONES LENGTH", String.valueOf(camiones.length()));
                     for (int i = 0; i < camiones.length(); i++) {
@@ -233,10 +235,24 @@ public class LoginActivity extends AppCompatActivity  {
                         Log.i("i", String.valueOf(i));
                     }
 
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressDialog.setMessage("Actualizando catálogo de tags...");
+                        }
+                    });
+
                     JSONArray tags = new JSONArray(JSON.getString("tags"));
                     Log.i("TAGS LENGTH", String.valueOf(tags.length()));
                     for (int i = 0; i < tags.length(); i++) {
-                        value = tag.create(tags.getJSONObject(i));
+                        value = tag.registrarTags(tags.getJSONObject(i));
+                        Log.i("i", String.valueOf(i));
+                    }
+
+                    JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
+                    Log.i("TAGS DISPONIBLES", String.valueOf(tags_disponibles.length()));
+                    for (int i = 0; i < tags_disponibles.length(); i++) {
+                        value = tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
                         Log.i("i", String.valueOf(i));
                     }
 
