@@ -48,13 +48,29 @@ public class Camion {
         db.execSQL("DELETE FROM camiones");
     }
 
-    public ArrayList getArrayList() {
+    public ArrayList getArrayListPlacas() {
         ArrayList<String> data = new ArrayList<String>();
         Cursor c = db.rawQuery("SELECT placas FROM camiones ORDER BY placas ASC", null);
         if (c != null && c.moveToFirst())
             try {
+                data.add("-- Seleccione --");
                 while (c.moveToNext()) {
                     data.add(c.getString(c.getColumnIndex("placas")));
+                }
+            } finally {
+                c.close();
+            }
+        return data;
+    }
+
+    public ArrayList getArrayListId() {
+        ArrayList<String> data = new ArrayList<String>();
+        Cursor c = db.rawQuery("SELECT idcamion, placas FROM camiones ORDER BY placas ASC", null);
+        if (c != null && c.moveToFirst())
+            try {
+                data.add("0");
+                while (c.moveToNext()) {
+                    data.add(c.getString(c.getColumnIndex("idcamion")));
                 }
             } finally {
                 c.close();

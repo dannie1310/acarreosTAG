@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,17 +43,13 @@ public class MainActivity extends AppCompatActivity
     private Camion camiones;
     private AlertDialog.Builder alertDialog;
     private NFCTag nfc;
-    private static final int N_ITEMS = 10;
-    private String text;
-
-    android.nfc.Tag myTag;
-    String lectura;
-    NfcAdapter adapter;
-    PendingIntent pendingIntent;
-    IntentFilter writeTagFilters[];
-    ViewGroup main;
+    private Tag myTag;
+    private NfcAdapter adapter;
+    private PendingIntent pendingIntent;
+    private IntentFilter writeTagFilters[];
     boolean writeMode;
     Spinner  spinner ;
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +57,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        nfc = new NFCTag(myTag, MainActivity.this);
+        nfc = new NFCTag(myTag, this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,40 +102,21 @@ public class MainActivity extends AppCompatActivity
 
         spinner = (Spinner) findViewById(R.id.spinner);
         camiones = new Camion(this);
-        final ArrayList <String> lista= camiones.getArrayList();
-        final ArrayAdapter<String> a = new ArrayAdapter<String>(this,R.layout.text_layout, lista);
+
+        final ArrayList <String> placas = camiones.getArrayListPlacas();
+        final ArrayList <String> ids = camiones.getArrayListId();
+
+        String[] spinnerArray = new String[ids.size()];
+        final HashMap<String,String> spinnerMap = new HashMap<String, String>();
+
+        for (int i = 0; i < ids.size(); i++) {
+            spinnerMap.put(placas.get(i), ids.get(i));
+            spinnerArray[i] = placas.get(i);
+        }
+
+        final ArrayAdapter<String> a = new ArrayAdapter<String>(this,R.layout.text_layout, spinnerArray);
         a.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(a);
-        Button btnWrite= (Button) findViewById(R.id.button_write);
-       // final TextView message = (TextView) findViewById(R.id.texto);
-
-        btnWrite.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                //text = message.getText().toString();
-
-
-                try {
-
-                    if (myTag == null) {
-                        Toast.makeText(MainActivity.this, "error tag", Toast.LENGTH_LONG).show();
-                    } else {
-                       // nfc.write(text, myTag);  //escribe mensaje en el Tag
-                        //lectura = nfc.read(myTag);    // lee los datos de la tag*/
-                        // lectura=readSector(myTag,3); //lee solo un sector
-                        // lectura = idTag(myTag); //muestra el UID de la tarjeta
-                        //System.out.println(lectura);
-                        //Toast.makeText(context, "UID: " + lectura, Toast.LENGTH_LONG).show();
-
-                        //clean(myTag);  // limpia la memoria del Tag
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "error de escritura", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
-            }
-        });
 
         adapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -146,50 +124,50 @@ public class MainActivity extends AppCompatActivity
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[]{tagDetected};
 
+        checkNfcEnabled();
 
+        Button btnWrite = (Button) findViewById(R.id.button_write);
+
+        btnWrite.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String placa = spinner.getSelectedItem().toString();
+                String id = spinnerMap.get(placa);
+
+                if(id == "0")  {
+                    Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_LONG).show();
+                } else {
+                    Log.i("IDCAMION", id.toString());
+                    checkNfcEnabled();
+                    WriteModeOn();
+                }
+            }
+        });
     }
 
-    @SuppressLint("NewApi")
-    private NdefRecord createRecord(String text) throws UnsupportedEncodingException {
-        String lang = "us";
-        byte[] textBytes = text.getBytes();
-        byte[] langBytes = lang.getBytes("US-ASCII");
-        int langLength = langBytes.length;
-        int textLength = textBytes.length;
-        byte[] payLoad = new byte[1 + langLength + textLength];
-
-        payLoad[0] = (byte) langLength;
-
-        System.arraycopy(langBytes, 0, payLoad, 1, langLength);
-        System.arraycopy(textBytes, 0, payLoad, 1 + langLength, textLength);
-
-        NdefRecord recordNFC = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payLoad);
-
-        return recordNFC;
-
-    }
-
-
-    @SuppressLint("NewApi")
+    @Override
     protected void onNewIntent(Intent intent) {
-        String UID="";
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            UID = nfc.idTag(myTag);
-            Toast.makeText(MainActivity.this, "detectado UID: "+UID, Toast.LENGTH_LONG).show();
-
+        if(writeMode) {
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                String UID = nfc.idTag(myTag);
+                Toast.makeText(MainActivity.this, "detectado UID: " + UID, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-
     public void onPause() {
         super.onPause();
-        WriteModeOff();
+        adapter.disableForegroundDispatch(this);
     }
 
     public void onResume() {
         super.onResume();
-        WriteModeOn();
+        checkNfcEnabled();
+        if(writeMode) {
+            adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
+        }
     }
 
     @SuppressLint("NewApi")
@@ -250,7 +228,23 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private boolean isSync() {
-        return true;
+    private void checkNfcEnabled() {
+        Boolean nfcEnabled = adapter.isEnabled();
+        if (!nfcEnabled) {
+            new android.app.AlertDialog.Builder(MainActivity.this)
+                    .setTitle(getString(R.string.text_warning_nfc_is_off))
+                    .setMessage(getString(R.string.text_turn_on_nfc))
+                    .setCancelable(true)
+                    .setPositiveButton(
+                            getString(R.string.text_update_settings),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int id) {
+                                    startActivity(new Intent(
+                                            android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                                }
+                            }).create().show();
+        }
     }
 }

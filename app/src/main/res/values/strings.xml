@@ -18,6 +18,9 @@
     <string name="error_conexion_tag">Error de conexion</string>
     <string name="button_write">Escribir en Tag</string>
     <string name="escribe">Escribe un mensaje</string>
+    <string name="error_camion_no_selected">Por favor seleccione un camión</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="text_warning_nfc_is_off">¡NFC Está apagado!</string>
+    <string name="text_turn_on_nfc">La aplicación no funciona si el adaptador NFC está apagado. Por favor encienda el adaptador NFC en la configuración del dispositivo.</string>
+    <string name="text_update_settings">Encender Ahora</string>
 </resources>
