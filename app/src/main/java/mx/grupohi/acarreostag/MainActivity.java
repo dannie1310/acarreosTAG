@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity
                 String id = spinnerMap.get(placa);
 
                 if(id == "0")  {
-                    Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
                     checkNfcEnabled();
                     WriteModeOn();
@@ -152,8 +152,11 @@ public class MainActivity extends AppCompatActivity
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String UID = nfc.idTag(myTag);
 
-                //AQUI SE ESCRIBE EN EL TAG
-
+                if(tags.tagDisponible(UID)) {
+                    //ESCRIBIR
+                } else {
+                    //ERROR
+                }
             }
         }
     }
