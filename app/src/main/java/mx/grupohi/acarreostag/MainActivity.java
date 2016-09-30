@@ -1,9 +1,12 @@
 package mx.grupohi.acarreostag;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +22,8 @@ public class MainActivity extends AppCompatActivity
 
     private Intent loginActivity;
     private User user;
+    private Tag tags;
+    private AlertDialog.Builder alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         user = new User(this);
+        tags = new Tag(this);
+
         loginActivity = new Intent(this, LoginActivity.class);
 
         drawer.post(new Runnable() {
@@ -92,22 +99,28 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-            if (isSync()) {
+            if (tags.areSynchronized()) {
                 user.deleteAll();
                 startActivity(loginActivity);
+            } else {
+                alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setTitle("Advertencia")
+                        .setMessage("No es posible cerrar la sesión ya que aún no haz sincronizado los tags configurados")
+                        .setPositiveButton("¡Sincronizar Ahora!", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.i("SINCRONIZAR", "YES");
+                            }
+                        })
+                        .setNegativeButton("Cancelar", null)
+                        .show();
             }
-            // CODIGO PARA VERIFICAR QUE SE HAN SINCRONIZADO LOS CAMBIOS EN EL SERVIDOR, SI SE HAN SINCRONIZADO SE CIERRA SESIÓN
-            user.deleteAll();
         } else if (id == R.id.nav_sync) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    private boolean isSync() {
         return true;
     }
 }
