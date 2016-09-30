@@ -3,20 +3,15 @@ package mx.grupohi.acarreostag;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +21,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -37,21 +31,18 @@ import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
-
-import mx.grupohi.acarreostag.NFCTag;
-import mx.grupohi.acarreostag.Tag;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Intent loginActivity;
     private User user;
-    private mx.grupohi.acarreostag.Tag tags;
+    private TagModel tags;
+    private Camion camiones;
     private AlertDialog.Builder alertDialog;
-    NFCTag nfc;
+    private NFCTag nfc;
     private static final int N_ITEMS = 10;
-    String text;
+    private String text;
 
     android.nfc.Tag myTag;
     String lectura;
@@ -89,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         user = new User(this);
-        tags = new mx.grupohi.acarreostag.Tag(this);
+        tags = new TagModel(this);
 
         loginActivity = new Intent(this, LoginActivity.class);
 
@@ -110,11 +101,11 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        final ArrayList <String> lista= new ArrayList<String>();
-        lista.add("1");
-        lista.add("2");
+
 
         spinner = (Spinner) findViewById(R.id.spinner);
+        camiones = new Camion(this);
+        final ArrayList <String> lista= camiones.getArrayList();
         final ArrayAdapter<String> a = new ArrayAdapter<String>(this,R.layout.text_layout, lista);
         a.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(a);

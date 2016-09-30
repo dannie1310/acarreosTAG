@@ -13,14 +13,14 @@ import java.security.PublicKey;
  * Created by JFEsquivel on 28/09/2016.
  */
 
-public class Tag {
+public class TagModel {
     private Context context;
     private ContentValues data;
 
     private SQLiteDatabase db;
     private DBScaSqlite db_sca;
 
-    public Tag(Context context) {
+    public TagModel(Context context) {
         this.context = context;
         this.data = new ContentValues();
         db_sca = new DBScaSqlite(this.context, "sca", null, 1);

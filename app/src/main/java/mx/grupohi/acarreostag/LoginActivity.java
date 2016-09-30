@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -47,7 +46,7 @@ public class LoginActivity extends AppCompatActivity  {
     SQLiteDatabase db;
     User user;
     Camion camion;
-    Tag tag;
+    TagModel tag;
 
     // Referencias UI.
     private AutoCompleteTextView mUsuarioView;
@@ -70,7 +69,7 @@ public class LoginActivity extends AppCompatActivity  {
 
         user = new User(this);
         camion = new Camion(this);
-        tag = new Tag(this);
+        tag = new TagModel(this);
 
         mIniciarSesionButton.setOnClickListener(new View.OnClickListener() {
             @Override

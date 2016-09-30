@@ -50,11 +50,11 @@ public class Camion {
 
     public ArrayList getArrayList() {
         ArrayList<String> data = new ArrayList<String>();
-        Cursor c = db.rawQuery("SELECT placa FROM camiones", null);
+        Cursor c = db.rawQuery("SELECT placas FROM camiones ORDER BY placas ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 while (c.moveToNext()) {
-                    data.add(c.getString(c.getColumnIndex("placa")));
+                    data.add(c.getString(c.getColumnIndex("placas")));
                 }
             } finally {
                 c.close();
