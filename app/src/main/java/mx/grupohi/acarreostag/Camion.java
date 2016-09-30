@@ -2,10 +2,13 @@ package mx.grupohi.acarreostag;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by JFEsquivel on 28/09/2016.
@@ -43,5 +46,19 @@ public class Camion {
 
     public void deleteAll() {
         db.execSQL("DELETE FROM camiones");
+    }
+
+    public ArrayList getArrayList() {
+        ArrayList<String> data = new ArrayList<String>();
+        Cursor c = db.rawQuery("SELECT placa FROM camiones", null);
+        if (c != null && c.moveToFirst())
+            try {
+                while (c.moveToNext()) {
+                    data.add(c.getString(c.getColumnIndex("placa")));
+                }
+            } finally {
+                c.close();
+            }
+        return data;
     }
 }
