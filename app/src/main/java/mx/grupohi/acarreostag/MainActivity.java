@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
                 if(id == "0")  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_LONG).show();
                 } else {
-                    Log.i("IDCAMION", id.toString());
+                    Log.i("IDCAMION", id);
                     checkNfcEnabled();
                     WriteModeOn();
                 }
