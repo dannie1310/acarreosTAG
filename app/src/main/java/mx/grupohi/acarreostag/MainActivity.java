@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
     private IntentFilter writeTagFilters[];
-
+    private Intent SyncActivity;
     boolean writeMode;
     Spinner  spinner ;
 
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.title_activity_main);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -227,13 +228,14 @@ public class MainActivity extends AppCompatActivity
                         .setPositiveButton("¡Sincronizar Ahora!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.i("SINCRONIZAR", "YES");
+                                nextActivity();
                             }
                         })
                         .setNegativeButton("Cancelar", null)
                         .show();
             }
         } else if (id == R.id.nav_sync) {
+            nextActivity();
 
         }
 
@@ -241,6 +243,11 @@ public class MainActivity extends AppCompatActivity
         assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void nextActivity() {
+        SyncActivity = new Intent(this, SyncActivity.class);
+        startActivity(SyncActivity);
     }
 
     private void checkNfcEnabled() {

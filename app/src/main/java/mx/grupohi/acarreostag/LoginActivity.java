@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.title_login_activity);
         setContentView(R.layout.activity_login);
 
         mUsuarioView = (AutoCompleteTextView) findViewById(R.id.usuario);
@@ -259,6 +260,10 @@ public class LoginActivity extends AppCompatActivity  {
                         value = tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
                         Log.i("i", String.valueOf(i));
                     }
+
+                    db = db_sca.getWritableDatabase();
+                    db.execSQL("INSERT INTO tags_disponibles (uid, idtag, idcamion) VALUES ('123','123','123')");
+                    db.close();
 
                     return value;
                 }

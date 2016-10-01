@@ -12,6 +12,8 @@
     <string name="URL">http://sca.grupohi.mx/android20151106.php</string>
     <string name="general_exception">Por favor verifique su conexión a internet e intentelo nuevamente</string>
     <string name="title_activity_main">Configurar TAG</string>
+    <string name="title_login_activity">Iniciar Sesión</string>
+    <string name="title_sync_activity">Sincronizar Datos</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
