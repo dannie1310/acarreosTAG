@@ -33,6 +33,7 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
     private IntentFilter writeTagFilters[];
+
     boolean writeMode;
     Spinner  spinner ;
 
@@ -59,10 +61,11 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         nfc = new NFCTag(myTag, this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if (fab != null)
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         });
@@ -70,17 +73,19 @@ public class MainActivity extends AppCompatActivity
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        if(drawer != null)
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if(navigationView != null)
         navigationView.setNavigationItemSelectedListener(this);
 
         user = new User(this);
         tags = new TagModel(this);
 
         loginActivity = new Intent(this, LoginActivity.class);
-
+        if(drawer != null)
         drawer.post(new Runnable() {
             @Override
             public void run() {
@@ -107,14 +112,14 @@ public class MainActivity extends AppCompatActivity
         final ArrayList <String> ids = camiones.getArrayListId();
 
         String[] spinnerArray = new String[ids.size()];
-        final HashMap<String,String> spinnerMap = new HashMap<String, String>();
+        final HashMap<String,String> spinnerMap = new HashMap<>();
 
         for (int i = 0; i < ids.size(); i++) {
             spinnerMap.put(placas.get(i), ids.get(i));
             spinnerArray[i] = placas.get(i);
         }
 
-        final ArrayAdapter<String> a = new ArrayAdapter<String>(this,R.layout.text_layout, spinnerArray);
+        final ArrayAdapter<String> a = new ArrayAdapter<>(this,R.layout.text_layout, spinnerArray);
         a.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(a);
 
@@ -128,6 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         Button btnWrite = (Button) findViewById(R.id.button_write);
 
+        if(btnWrite != null)
         btnWrite.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -135,7 +141,7 @@ public class MainActivity extends AppCompatActivity
                 String placa = spinner.getSelectedItem().toString();
                 String id = spinnerMap.get(placa);
 
-                if(id == "0")  {
+                if(Objects.equals(id, "0"))  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
                     checkNfcEnabled();
@@ -154,11 +160,17 @@ public class MainActivity extends AppCompatActivity
 
                 if(tags.tagDisponible(UID)) {
                     //ESCRIBIR
+
                 } else {
                     //ERROR
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     public void onPause() {
@@ -174,24 +186,22 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressLint("NewApi")
     private void WriteModeOn() {
         writeMode = true;
         adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
     }
 
-    @SuppressLint("NewApi")
     private void WriteModeOff() {
         writeMode = false;
         adapter.disableForegroundDispatch(this);
     }
 
 
-
     @TargetApi(Build.VERSION_CODES.DONUT)
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -228,6 +238,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -243,12 +254,12 @@ public class MainActivity extends AppCompatActivity
                             getString(R.string.text_update_settings),
                             new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int id) {
-                                    startActivity(new Intent(
-                                            android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
                                 }
-                            }).create().show();
+                            })
+                    .create()
+                    .show();
         }
     }
 }

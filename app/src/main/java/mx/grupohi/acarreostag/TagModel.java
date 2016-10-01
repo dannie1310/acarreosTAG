@@ -8,19 +8,20 @@ import android.database.sqlite.SQLiteDatabase;
 import org.json.JSONObject;
 
 import java.security.PublicKey;
+import java.util.Objects;
 
 /**
  * Created by JFEsquivel on 28/09/2016.
  */
 
-public class TagModel {
+class TagModel {
     private Context context;
     private ContentValues data;
 
     private SQLiteDatabase db;
     private DBScaSqlite db_sca;
 
-    public TagModel(Context context) {
+    TagModel(Context context) {
         this.context = context;
         this.data = new ContentValues();
         db_sca = new DBScaSqlite(this.context, "sca", null, 1);
@@ -28,7 +29,7 @@ public class TagModel {
         this.data.clear();
     }
 
-    public boolean registrarTags(JSONObject data) throws Exception {
+    boolean registrarTags(JSONObject data) throws Exception {
         this.data.clear();
         this.data.put("uid", data.getString("uid"));
         this.data.put("idcamion", data.getString("idcamion"));
@@ -37,48 +38,39 @@ public class TagModel {
         return db.insert("tags", null, this.data) > -1;
     }
 
-    public void deleteAll() {
+    void deleteAll() {
         db.execSQL("DELETE FROM tags");
         db.execSQL("DELETE FROM tags_disponibles");
     }
 
-    public boolean registrarTagsDisponibles(JSONObject data) throws Exception {
+    boolean registrarTagsDisponibles(JSONObject data) throws Exception {
         this.data.clear();
         this.data.put("uid", data.getString("uid"));
         this.data.put("idtag", data.getString("id"));
-        this.data.put("idcamion", data.getString("idcamion"));
+        this.data.put("idcamion", !Objects.equals(data.getString("idcamion"), "null") ? data.getString("idcamion") : null);
 
         return db.insert("tags_disponibles", null, this.data) > -1;
     }
 
-    public boolean areSynchronized() {
-        Cursor c = db.rawQuery("SELECT idcamion FROM tags_disponibles", null);
+    boolean areSynchronized() {
         Boolean result = true;
-        try {
-            if(c != null && c.moveToFirst()) {
+        try (Cursor c = db.rawQuery("SELECT idcamion FROM tags_disponibles", null)) {
+            if (c != null && c.moveToFirst()) {
                 while (c.moveToNext()) {
                     if (c.getString(c.getColumnIndex("idcamion")) != null) {
                         result = false;
                     }
                 }
             }
-        } finally {
-            c.close();
         }
         return result;
     }
 
-    public boolean tagDisponible (String UID) {
-        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid =" + UID + "and idcamion = null", null);
-        boolean result = false;
-        try {
-            if(c != null && c.moveToFirst()) {
-                result = true;
-            } else {
-                result = false;
-            }
-        } finally {
-            return result;
+    boolean tagDisponible (String UID) {
+        boolean result;
+        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid =" + UID + "and idcamion = null", null)) {
+            result = c != null && c.moveToFirst();
         }
+        return result;
     }
 }

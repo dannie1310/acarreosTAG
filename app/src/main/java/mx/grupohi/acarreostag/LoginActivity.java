@@ -94,6 +94,11 @@ public class LoginActivity extends AppCompatActivity  {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void nextActivity() {
         mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
@@ -207,7 +212,7 @@ public class LoginActivity extends AppCompatActivity  {
                             mProgressDialog.setMessage("Actualizando datos de usuario...");
                         }
                     });
-                    Boolean value = false;
+                    Boolean value;
                     ContentValues data = new ContentValues();
 
                     data.put("idusuario", (String) JSON.get("IdUsuario"));
@@ -271,7 +276,6 @@ public class LoginActivity extends AppCompatActivity  {
             mProgressDialog.dismiss();
             if (aBoolean) {
                 nextActivity();
-            } else {
             }
         }
 
