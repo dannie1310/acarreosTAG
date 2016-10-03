@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.title_login_activity);
         setContentView(R.layout.activity_login);
 
         mUsuarioView = (AutoCompleteTextView) findViewById(R.id.usuario);
@@ -92,6 +93,11 @@ public class LoginActivity extends AppCompatActivity  {
         if(user.get()) {
             nextActivity();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void nextActivity() {
@@ -207,7 +213,7 @@ public class LoginActivity extends AppCompatActivity  {
                             mProgressDialog.setMessage("Actualizando datos de usuario...");
                         }
                     });
-                    Boolean value = false;
+                    Boolean value;
                     ContentValues data = new ContentValues();
 
                     data.put("idusuario", (String) JSON.get("IdUsuario"));
@@ -271,7 +277,6 @@ public class LoginActivity extends AppCompatActivity  {
             mProgressDialog.dismiss();
             if (aBoolean) {
                 nextActivity();
-            } else {
             }
         }
 

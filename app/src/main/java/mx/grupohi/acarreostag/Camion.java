@@ -14,22 +14,22 @@ import java.util.ArrayList;
  * Created by JFEsquivel on 28/09/2016.
  */
 
-public class Camion {
+class Camion {
 
-    Context context;
-    ContentValues data;
+    private Context context;
+    private ContentValues data;
 
-    SQLiteDatabase db;
-    DBScaSqlite db_sca;
+    private SQLiteDatabase db;
+    private DBScaSqlite db_sca;
 
-    public Camion(Context context) {
+     Camion(Context context) {
         this.context = context;
         data = new ContentValues();
         db_sca = new DBScaSqlite(this.context, "sca", null, 1);
         db = db_sca.getWritableDatabase();
     }
 
-    public boolean create(JSONObject data) throws Exception {
+    boolean create(JSONObject data) throws Exception {
 
         Log.i("JSON", data.toString());
         this.data.put("idCamion", data.getString("idcamion"));
@@ -44,12 +44,12 @@ public class Camion {
         return db.insert("camiones", null, this.data) > -1;
     }
 
-    public void deleteAll() {
+    void deleteAll() {
         db.execSQL("DELETE FROM camiones");
     }
 
-    public ArrayList getArrayListPlacas() {
-        ArrayList<String> data = new ArrayList<String>();
+    ArrayList<String> getArrayListPlacas() {
+        ArrayList<String> data = new ArrayList<>();
         Cursor c = db.rawQuery("SELECT placas FROM camiones ORDER BY placas ASC", null);
         if (c != null && c.moveToFirst())
             try {
@@ -63,8 +63,8 @@ public class Camion {
         return data;
     }
 
-    public ArrayList getArrayListId() {
-        ArrayList<String> data = new ArrayList<String>();
+    ArrayList<String> getArrayListId() {
+        ArrayList<String> data = new ArrayList<>();
         Cursor c = db.rawQuery("SELECT idcamion, placas FROM camiones ORDER BY placas ASC", null);
         if (c != null && c.moveToFirst())
             try {

@@ -12,6 +12,8 @@
     <string name="URL">http://sca.grupohi.mx/android20151106.php</string>
     <string name="general_exception">Por favor verifique su conexión a internet e intentelo nuevamente</string>
     <string name="title_activity_main">Configurar TAG</string>
+    <string name="title_login_activity">Iniciar Sesión</string>
+    <string name="title_sync_activity">Sincronizar Datos</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -23,4 +25,8 @@
     <string name="text_warning_nfc_is_off">¡NFC Está apagado!</string>
     <string name="text_turn_on_nfc">La aplicación no funciona si el adaptador NFC está apagado. Por favor encienda el adaptador NFC en la configuración del dispositivo.</string>
     <string name="text_update_settings">Encender Ahora</string>
+
+    <string name="title_activity_sync">SyncActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
