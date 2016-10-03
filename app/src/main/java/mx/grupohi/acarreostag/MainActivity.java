@@ -143,8 +143,7 @@ public class MainActivity extends AppCompatActivity
                 String placa = spinner.getSelectedItem().toString();
                 idCamion = spinnerMap.get(placa);
 
-                if(Objects.equals(id, "0"))  {
-                if(idCamion == "0")  {
+                if(Objects.equals(idCamion, "0"))  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
                     checkNfcEnabled();
@@ -156,23 +155,23 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onNewIntent(Intent intent) {
-        String mensaje="";
+        String mensaje;
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String UID = nfc.idTag(myTag);
+                Log.i("UID", UID);
 
-               if(tags.tagDisponible(UID)) {
-                    //ESCRIBIR
-
-                   System.out.println("csmion"+idCamion);
-
-                   mensaje=nfc.concatenar(idCamion,user.getIdProyecto());
-                   nfc.writeID(myTag,0,1,mensaje);
-                   System.out.println(UID);
+                if(tags.exists(UID)) {
+                    if (tags.tagDisponible(UID)) {
+                        mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
+                        nfc.writeID(myTag, 0, 1, mensaje);
+                        tags.update(idCamion, UID);
+                    } else {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    //ERROR
-                   System.out.println(UID);
+                    Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
                 }
             }
         }

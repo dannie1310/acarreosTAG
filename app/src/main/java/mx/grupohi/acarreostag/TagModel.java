@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.Contacts;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -11,7 +13,7 @@ import java.security.PublicKey;
 import java.util.Objects;
 
 /**
- * Created by JFEsquivel on 28/09/2016.
+ * Creado por JFEsquivel on 28/09/2016.
  */
 
 class TagModel {
@@ -66,9 +68,28 @@ class TagModel {
         return result;
     }
 
+    boolean exists(String UID) {
+        boolean result;
+        try (Cursor c = db.rawQuery("SELECT * FROM (SELECT uid FROM tags UNION SELECT uid FROM tags_disponibles) as total WHERE uid = '" + UID + "'", null)) {
+            result = c != null && c.moveToFirst();
+        }
+        return  result;
+    }
+
+    void update(String idcamion, String UID) {
+        this.data.clear();
+        this.data.put("idcamion", idcamion);
+
+        try {
+            db.update("tags_disponibles", this.data, "uid = '" + UID + "'", null);
+        } catch (Exception e) {
+            Toast.makeText(this.context, this.context.getString(R.string.error_update_tag), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     boolean tagDisponible (String UID) {
         boolean result;
-        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid =" + UID + "and idcamion = null", null)) {
+        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "' and idcamion is null", null)) {
             result = c != null && c.moveToFirst();
         }
         return result;

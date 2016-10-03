@@ -8,17 +8,14 @@ import android.widget.Toast;
 
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
-/**
- * Created by Usuario on 29/09/2016.
- */
-
-public class NFCTag {
+class NFCTag {
 
     private Tag NFCTag;
-    Context context;
+    private Context context;
 
-    public NFCTag(Tag NFCTag, Context context) {
+    NFCTag(Tag NFCTag, Context context) {
         this.context=context;
         this.NFCTag = NFCTag;
     }
@@ -35,7 +32,7 @@ public class NFCTag {
             int z = 1;
             int block;
             int auxBlock = 2;
-            boolean auth = false;
+            boolean auth;
             byte[] value = text.getBytes();
             System.out.println(value.length);
             if (value.length <= 752) {
@@ -70,15 +67,15 @@ public class NFCTag {
                     }
                 }
 
-                Toast.makeText(context, "OK", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, context.getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(context, "Error, La cadena excede la capacidad de almacenamiento", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, context.getString(R.string.error_tag_capacidad_almacenamiento), Toast.LENGTH_SHORT).show();
             }
             mfc.close();
 
 
         } catch (Exception fe) {
-            Toast.makeText(context, "error de escritura 1", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.error_tag_comunicacion), Toast.LENGTH_SHORT).show();
             fe.printStackTrace();
         }
     }
@@ -89,7 +86,7 @@ public class NFCTag {
 
         try {
             mfc.connect();
-            boolean auth = false;
+            boolean auth;
             byte[] value = mensaje.getBytes();
             auth = mfc.authenticateSectorWithKeyA(sector, MifareClassic.KEY_DEFAULT);
             if (auth) {
@@ -106,49 +103,44 @@ public class NFCTag {
                     mfc.writeBlock(bloque, toWrite);
                 }
             }
-            Toast.makeText(context, "OK", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.tag_configurado), Toast.LENGTH_SHORT).show();
 
             mfc.close();
 
 
         } catch (Exception fe) {
-            Toast.makeText(context, "error de escritura 1", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.error_tag_comunicacion), Toast.LENGTH_SHORT).show();
             fe.printStackTrace();
         }
     }
+    String concatenar(String idCamion, String idProyecto) {
+        String resultado;
+        String aux = idCamion;
+        String aux1= idProyecto;
 
-   String concatenar(String idCamion, String idProyecto){
+        for(int i = idCamion.length(); i < 4; i++) {
+            aux = 0 + aux;
+        }
 
-
-       String resultado="";
-       String aux =idCamion;
-       String aux1=idProyecto;
-       for(int i=idCamion.length(); i<4;i++){
-           aux= 0 + aux;
-       }
-
-       for(int i=idProyecto.length(); i<4;i++){
-           aux1= 0 + aux1;
-       }
-
-        resultado= aux+aux1;
-       Log.i("respuesta",resultado);
-       return resultado;
-
+        for(int i = idProyecto.length(); i < 4; i++) {
+            aux1 = 0 + aux1;
+        }
+        resultado = aux + aux1;
+        return resultado;
     }
 
     String read(Tag tag) {
-        int y = 0;
+        int y;
         int j = 1;
         int z = 1;
-        byte[] toRead = null;
+        byte[] toRead;
         int block;
         int auxBlock = 2;
         String aux = "";
         MifareClassic mf = MifareClassic.get(tag);
         try {
             mf.connect();
-            boolean auth = false;
+            boolean auth;
             for (y = 0; y < 16; y++) {
                 //System.out.println("Sector "+ y);
                 auth = mf.authenticateSectorWithKeyA(y, MifareClassic.KEY_DEFAULT);
@@ -190,7 +182,7 @@ public class NFCTag {
     private String readSector (Tag tag, int sector) {
 
         int z = 1;
-        byte[] toRead=null;
+        byte[] toRead;
         int block;
         int auxBlock;
 
@@ -206,7 +198,7 @@ public class NFCTag {
         MifareClassic mf = MifareClassic.get(tag);
         try {
             mf.connect();
-            boolean auth = false;
+            boolean auth;
 
             auth = mf.authenticateSectorWithKeyA(sector, MifareClassic.KEY_DEFAULT);
             if (auth) {
@@ -242,12 +234,12 @@ public class NFCTag {
         try {
             mfc.connect();
             int x = 0;
-            int y = 0;
+            int y;
             int iw;
             int z = 1;
             int block;
             int auxBlock = 2;
-            boolean auth = false;
+            boolean auth;
 
             for (y=0; y < 16; y++) {
                 auth = mfc.authenticateSectorWithKeyA(y, MifareClassic.KEY_DEFAULT);
@@ -280,22 +272,19 @@ public class NFCTag {
 
     String idTag(Tag tag){
 
-        byte[] toRead=null;
+        byte[] toRead;
         byte[] send= new byte[4];
         String aux="";
         MifareClassic mf = MifareClassic.get(tag);
         try {
             mf.connect();
-            boolean auth = false;
+            boolean auth;
 
             auth = mf.authenticateSectorWithKeyA(0, MifareClassic.KEY_DEFAULT);
             if (auth) {
                 toRead = mf.readBlock(0);
-                System.out.println(toRead.toString());
-                for(int i=0; i<4; i++) {
-                    // System.out.println("id: "+ i + " num: " + toRead[i]);
-                    send[i]=toRead[i];
-                }
+                System.out.println(Arrays.toString(toRead));
+                System.arraycopy(toRead, 0, send, 0, 4);
                 aux=byteArrayToHexString(send);
             }
             mf.close();
@@ -307,7 +296,7 @@ public class NFCTag {
         return  aux;
     }
 
-    public static String byteArrayToHexString(byte[] byteArray){
+    private static String byteArrayToHexString(byte[] byteArray){
         return String.format("%0" + (byteArray.length * 2) + "X", new BigInteger(1,byteArray));
     }
 }
