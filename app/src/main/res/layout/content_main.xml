@@ -13,22 +13,14 @@
     tools:context="mx.grupohi.acarreostag.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Selecciona un camión: "
-        android:layout_marginTop="13dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
     <Spinner
         android:id="@+id/spinner"
 
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_marginTop="40dp"
-        android:layout_alignParentStart="true">
+        android:layout_alignEnd="@+id/textView"
+        android:layout_alignStart="@+id/textView">
 
     </Spinner>
 
@@ -39,9 +31,18 @@
         android:layout_height="wrap_content"
         android:text="@string/button_write"
         android:textStyle="bold"
-        android:layout_marginTop="88dp"
-        android:layout_below="@+id/spinner"
+        android:layout_centerVertical="true"
         android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seleccione las placas del camión:"
+        android:layout_marginTop="14dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

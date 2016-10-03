@@ -50,12 +50,12 @@ class Camion {
 
     ArrayList<String> getArrayListPlacas() {
         ArrayList<String> data = new ArrayList<>();
-        Cursor c = db.rawQuery("SELECT placas FROM camiones ORDER BY placas ASC", null);
+        Cursor c = db.rawQuery("SELECT placas, economico FROM camiones ORDER BY economico ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("-- Seleccione --");
                 while (c.moveToNext()) {
-                    data.add(c.getString(c.getColumnIndex("placas")));
+                    data.add(c.getString(c.getColumnIndex("economico")) + " [" + c.getString(c.getColumnIndex("placas")) + "]");
                 }
             } finally {
                 c.close();
@@ -65,7 +65,7 @@ class Camion {
 
     ArrayList<String> getArrayListId() {
         ArrayList<String> data = new ArrayList<>();
-        Cursor c = db.rawQuery("SELECT idcamion, placas FROM camiones ORDER BY placas ASC", null);
+        Cursor c = db.rawQuery("SELECT idcamion, placas, economico FROM camiones ORDER BY economico ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("0");
