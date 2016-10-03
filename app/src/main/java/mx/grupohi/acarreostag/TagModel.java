@@ -76,13 +76,17 @@ class TagModel {
         return  result;
     }
 
-    void update(String idcamion, String UID) {
+    void update(String UID, String idcamion, String idProyecto) {
         this.data.clear();
+        this.data.put("uid", UID);
         this.data.put("idcamion", idcamion);
+        this.data.put("idproyecto", idProyecto);
 
         try {
-            db.update("tags_disponibles", this.data, "uid = '" + UID + "'", null);
+            db.delete("tags_disponibles", "uid = '" + UID + "'", null);
+            db.insert("tags", null, this.data);
         } catch (Exception e) {
+
             Toast.makeText(this.context, this.context.getString(R.string.error_update_tag), Toast.LENGTH_SHORT).show();
         }
     }

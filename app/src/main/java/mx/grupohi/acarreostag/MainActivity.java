@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
                         nfc.writeID(myTag, 0, 1, mensaje);
-                        tags.update(idCamion, UID);
+                        tags.update(UID, idCamion, user.getIdProyecto());
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
                     }
