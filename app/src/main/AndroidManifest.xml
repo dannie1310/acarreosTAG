@@ -32,7 +32,11 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SyncActivity"></activity>
+        <activity
+            android:name=".SyncActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_sync"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

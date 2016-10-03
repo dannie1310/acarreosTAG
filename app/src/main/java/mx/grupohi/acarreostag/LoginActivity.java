@@ -261,10 +261,6 @@ public class LoginActivity extends AppCompatActivity  {
                         Log.i("i", String.valueOf(i));
                     }
 
-                    db = db_sca.getWritableDatabase();
-                    db.execSQL("INSERT INTO tags_disponibles (uid, idtag, idcamion) VALUES ('123','123','123')");
-                    db.close();
-
                     return value;
                 }
             } catch (Exception e) {
