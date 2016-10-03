@@ -3,6 +3,7 @@ package mx.grupohi.acarreostag;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     private TagModel tags;
     private Camion camiones;
     private AlertDialog.Builder alertDialog;
+    private ProgressDialog progress;
     private NFCTag nfc;
     private Tag myTag;
     private NfcAdapter adapter;
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity
         if(btnWrite != null)
         btnWrite.setOnClickListener(new View.OnClickListener() {
 
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
                 String placa = spinner.getSelectedItem().toString();
@@ -146,7 +149,14 @@ public class MainActivity extends AppCompatActivity
                 if(Objects.equals(idCamion, "0"))  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
+
                     checkNfcEnabled();
+                    progress=new ProgressDialog(MainActivity.this);
+                    progress.setMessage("Acerque el Tag");
+                    progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progress.setIndeterminate(true);
+                    progress.setProgress(50);
+                    progress.show();
                     WriteModeOn();
                 }
             }
@@ -161,9 +171,10 @@ public class MainActivity extends AppCompatActivity
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String UID = nfc.idTag(myTag);
                 Log.i("UID", UID);
-
                 if(tags.exists(UID)) {
+
                     if (tags.tagDisponible(UID)) {
+
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
                         nfc.writeID(myTag, 0, 1, mensaje);
                         tags.update(UID, idCamion, user.getIdProyecto());
@@ -173,6 +184,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
                 }
+                progress.dismiss();
             }
         }
     }
