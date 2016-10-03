@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
     private IntentFilter writeTagFilters[];
+    private String idCamion;
     boolean writeMode;
     Spinner  spinner ;
 
@@ -133,9 +134,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 String placa = spinner.getSelectedItem().toString();
-                String id = spinnerMap.get(placa);
+                idCamion = spinnerMap.get(placa);
 
-                if(id == "0")  {
+                if(idCamion == "0")  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
                     checkNfcEnabled();
@@ -147,15 +148,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onNewIntent(Intent intent) {
+        String mensaje="";
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String UID = nfc.idTag(myTag);
 
-                if(tags.tagDisponible(UID)) {
+               if(tags.tagDisponible(UID)) {
                     //ESCRIBIR
+                   System.out.println("csmion"+idCamion);
+
+                   mensaje=nfc.concatenar(idCamion,user.getIdProyecto());
+                   nfc.writeID(myTag,0,1,mensaje);
+                   System.out.println(UID);
                 } else {
                     //ERROR
+                   System.out.println(UID);
                 }
             }
         }

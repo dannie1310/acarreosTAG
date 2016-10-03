@@ -69,16 +69,18 @@ public class TagModel {
     }
 
     public boolean tagDisponible (String UID) {
-        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid =" + UID + "and idcamion = null", null);
-        boolean result = false;
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid ='" + UID + "' and idcamion = null", null);
+        Boolean result = false;
         try {
-            if(c != null && c.moveToFirst()) {
+            if(c != null) {
                 result = true;
             } else {
                 result = false;
             }
         } finally {
-            return result;
+            c.close();
         }
+
+        return result;
     }
 }

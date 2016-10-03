@@ -56,4 +56,12 @@ public class User {
         }
         return proyecto;
     }
+
+    public String getIdProyecto() {
+        Cursor c = db.rawQuery("SELECT idproyecto FROM user LIMIT 1", null);
+        if (c.moveToFirst()) {
+            proyecto = c.getString(c.getColumnIndex("idproyecto"));
+        }
+        return proyecto;
+    }
 }

@@ -3,6 +3,7 @@ package mx.grupohi.acarreostag;
 import android.content.Context;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -80,6 +81,60 @@ public class NFCTag {
             Toast.makeText(context, "error de escritura 1", Toast.LENGTH_LONG).show();
             fe.printStackTrace();
         }
+    }
+
+    void writeID(Tag tag, int sector, int bloque, String mensaje){
+
+        MifareClassic mfc = MifareClassic.get(tag);
+
+        try {
+            mfc.connect();
+            boolean auth = false;
+            byte[] value = mensaje.getBytes();
+            auth = mfc.authenticateSectorWithKeyA(sector, MifareClassic.KEY_DEFAULT);
+            if (auth) {
+
+                byte[] toWrite = new byte[MifareClassic.BLOCK_SIZE];
+
+                for (int iw = 0; iw < MifareClassic.BLOCK_SIZE; iw++) {
+                    if (iw < value.length) {
+                        toWrite[iw] = value[iw];
+                    } else {
+                        toWrite[iw] = 0;
+                    }
+
+                    mfc.writeBlock(bloque, toWrite);
+                }
+            }
+            Toast.makeText(context, "OK", Toast.LENGTH_LONG).show();
+
+            mfc.close();
+
+
+        } catch (Exception fe) {
+            Toast.makeText(context, "error de escritura 1", Toast.LENGTH_LONG).show();
+            fe.printStackTrace();
+        }
+    }
+
+   String concatenar(String idCamion, String idProyecto){
+
+
+       String resultado="";
+       String aux =idCamion;
+       String aux1=idProyecto;
+       for(int i=idCamion.length(); i<4;i++){
+           aux= 0 + aux;
+       }
+
+       for(int i=idProyecto.length(); i<4;i++){
+           aux1= 0 + aux1;
+       }
+
+        resultado= aux+aux1;
+       Log.i("respuesta",resultado);
+       return resultado;
+
     }
 
     String read(Tag tag) {
@@ -181,7 +236,7 @@ public class NFCTag {
         return  aux;
     }
 
-    private void clean(Tag tag){
+    void clean(Tag tag){
 
         MifareClassic mfc = MifareClassic.get(tag);
         try {
