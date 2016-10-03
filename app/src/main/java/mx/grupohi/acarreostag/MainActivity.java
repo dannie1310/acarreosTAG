@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Intent loginActivity;
+    private Button btnWrite;
+    private Spinner  spinner ;
+
     private User user;
     private TagModel tags;
     private Camion camiones;
@@ -52,8 +55,8 @@ public class MainActivity extends AppCompatActivity
     private IntentFilter writeTagFilters[];
     private Intent SyncActivity;
     private String idCamion;
-    boolean writeMode;
-    Spinner  spinner ;
+
+    private boolean writeMode;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     @Override
@@ -64,15 +67,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         nfc = new NFCTag(myTag, this);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null)
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
-            }
-        });
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -135,7 +129,7 @@ public class MainActivity extends AppCompatActivity
 
         checkNfcEnabled();
 
-        Button btnWrite = (Button) findViewById(R.id.button_write);
+        btnWrite = (Button) findViewById(R.id.button_write);
 
         if(btnWrite != null)
         btnWrite.setOnClickListener(new View.OnClickListener() {
@@ -178,6 +172,8 @@ public class MainActivity extends AppCompatActivity
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
                         nfc.writeID(myTag, 0, 1, mensaje);
                         tags.update(UID, idCamion, user.getIdProyecto());
+                        btnWrite.setEnabled(true);
+                        spinner.setEnabled(true);
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
                     }
@@ -186,6 +182,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 progress.dismiss();
             }
+            btnWrite.setEnabled(true);
+            spinner.setEnabled(true);
         }
     }
 
@@ -210,6 +208,9 @@ public class MainActivity extends AppCompatActivity
     private void WriteModeOn() {
         writeMode = true;
         adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
+        btnWrite.setEnabled(false);
+        spinner.setEnabled(false);
+
     }
 
     private void WriteModeOff() {
@@ -248,14 +249,14 @@ public class MainActivity extends AppCompatActivity
                         .setPositiveButton("¡Sincronizar Ahora!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                nextActivity();
+                               // nextActivity();
                             }
                         })
                         .setNegativeButton("Cancelar", null)
                         .show();
             }
         } else if (id == R.id.nav_sync) {
-            nextActivity();
+            //nextActivity();
 
         }
 
@@ -266,8 +267,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void nextActivity() {
-        SyncActivity = new Intent(this, SyncActivity.class);
-        startActivity(SyncActivity);
+        //SyncActivity = new Intent(this, SyncActivity.class);
+        //startActivity(SyncActivity);
     }
 
     private void checkNfcEnabled() {

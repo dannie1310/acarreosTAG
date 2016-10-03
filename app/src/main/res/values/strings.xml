@@ -13,12 +13,11 @@
     <string name="general_exception">Por favor verifique su conexión a internet e intentelo nuevamente</string>
     <string name="title_activity_main">Configurar TAG</string>
     <string name="title_login_activity">Iniciar Sesión</string>
-    <string name="title_sync_activity">Sincronizar Datos</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="error_conexion_tag">Error de conexion</string>
-    <string name="button_write">Escribir en Tag</string>
+    <string name="button_write">PULSE AQUÍ PARA ESCRIBIR LOS DATOS EN EL TAG</string>
     <string name="escribe">Escribe un mensaje</string>
     <string name="error_camion_no_selected">Por favor seleccione un camión</string>
     <string name="error_tag_configurado">El TAG que intentas configurar ya ha sido configurado</string>
@@ -30,7 +29,5 @@
     <string name="text_turn_on_nfc">La aplicación no funciona si el adaptador NFC está apagado. Por favor encienda el adaptador NFC en la configuración del dispositivo.</string>
     <string name="text_update_settings">Encender Ahora</string>
     <string name="tag_configurado">TAG configurado correctamente</string>
-    <string name="title_activity_sync">SyncActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>
