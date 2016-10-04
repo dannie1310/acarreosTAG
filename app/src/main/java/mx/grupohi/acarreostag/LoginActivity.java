@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity  {
         mIniciarSesionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isNetworkStatusAvialable(getApplicationContext())) {
+                if (Util.isNetworkStatusAvialable(getApplicationContext())) {
                     attemptLogin();
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.error_internet, Toast.LENGTH_LONG).show();
@@ -104,17 +104,7 @@ public class LoginActivity extends AppCompatActivity  {
         mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
     }
-    public static boolean isNetworkStatusAvialable (Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null)
-        {
-            NetworkInfo netInfos = connectivityManager.getActiveNetworkInfo();
-            if(netInfos != null)
-                if(netInfos.isConnected())
-                    return true;
-        }
-        return false;
-    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -158,7 +148,6 @@ public class LoginActivity extends AppCompatActivity  {
                     mAuthTask.execute((Void) null);
                 }
             }).run();
-
         }
     }
 
@@ -186,15 +175,14 @@ public class LoginActivity extends AppCompatActivity  {
         @Override
         protected Boolean doInBackground(Void... params) {
             ContentValues values = new ContentValues();
-            values.put("metodo", "ConfDATA");
 
+            values.put("metodo", "ConfDATA");
             values.put("usr", mUsuario);
-            //values.put("pass", new MD5(mPassword).convert());
             values.put("pass", mPassword);
 
             try {
                 URL url = new URL("http://sca.grupohi.mx/android20160923.php");
-                JSON = JsonHttp(url, values);
+                JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
                 errorMessage(getResources().getString(R.string.general_exception));
@@ -286,52 +274,6 @@ public class LoginActivity extends AppCompatActivity  {
         }
     }
 
-    private void updateCatalogos(JSONObject JSON) {
-
-    }
-
-    private JSONObject JsonHttp(URL url, ContentValues values) throws JSONException {
-
-        String response = null;
-        try {
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-
-            OutputStream os = conn.getOutputStream();
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-            bw.write(getQuery(values));
-            bw.flush();
-
-            int statusCode = conn.getResponseCode();
-
-            Log.i("Status Code",String.valueOf(statusCode));
-
-            InputStream is = conn.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line, toAppend;
-
-            toAppend = br.readLine() + "\n";
-            sb.append(toAppend);
-            while ((line = br.readLine()) != null) {
-                toAppend = line + "\n";
-                sb.append(toAppend);
-            }
-
-            is.close();
-            response = sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            errorMessage(getResources().getString(R.string.general_exception));
-        }
-        return  new JSONObject(response);
-    }
-
     private void errorMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
@@ -351,23 +293,6 @@ public class LoginActivity extends AppCompatActivity  {
         });
     }
 
-    private String getQuery(ContentValues values) throws UnsupportedEncodingException
-    {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
 
-        for (Map.Entry<String, Object> entry : values.valueSet())
-        {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));
-        }
-        return result.toString();
-    }
 }
 

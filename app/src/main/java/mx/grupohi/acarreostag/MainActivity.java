@@ -237,14 +237,14 @@ public class MainActivity extends AppCompatActivity
                         .setPositiveButton("¡Sincronizar Ahora!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                               // nextActivity();
+                               nextActivity();
                             }
                         })
                         .setNegativeButton("Cancelar", null)
                         .show();
             }
         } else if (id == R.id.nav_sync) {
-            //nextActivity();
+            nextActivity();
 
         }
 
@@ -255,8 +255,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void nextActivity() {
-        //SyncActivity = new Intent(this, SyncActivity.class);
-        //startActivity(SyncActivity);
+        SyncActivity = new Intent(this, SyncActivity.class);
+        startActivity(SyncActivity);
     }
 
     private void checkNfcEnabled() {

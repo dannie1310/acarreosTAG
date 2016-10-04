@@ -3,10 +3,12 @@ package mx.grupohi.acarreostag;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.Contacts;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.security.PublicKey;
@@ -20,7 +22,7 @@ class TagModel {
     private Context context;
     private ContentValues data;
 
-    private SQLiteDatabase db;
+    public static SQLiteDatabase db;
     private DBScaSqlite db_sca;
 
     TagModel(Context context) {
@@ -54,7 +56,7 @@ class TagModel {
         return db.insert("tags_disponibles", null, this.data) > -1;
     }
 
-    boolean areSynchronized() {
+    public static boolean areSynchronized() {
         Boolean result = true;
         try (Cursor c = db.rawQuery("SELECT idcamion FROM tags_disponibles", null)) {
             if (c != null && c.moveToFirst()) {
@@ -76,15 +78,34 @@ class TagModel {
         return  result;
     }
 
-    void update(String UID, String idcamion, String idProyecto) {
+    public static JSONObject getJSON() {
+        JSONObject JSON = new JSONObject();
+        try {
+            Cursor c = db.rawQuery("SELECT * FROM  tags_disponibles WHERE idcamion  IS NOT NULL", null);
+            if (c != null && c.moveToFirst()) {
+                int i = 0;
+                do {
+                    JSONObject json = new JSONObject();
+
+                    json.put("uid", c.getString(c.getColumnIndex("uid")));
+                    json.put("idcamion", c.getString(c.getColumnIndex("idcamion")));
+                    json.put("idtag", c.getString(c.getColumnIndex("idtag")));
+
+                    JSON.put(i + "", json);
+                } while (c.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JSON;
+    }
+
+    void update(String UID, String idcamion, String idTag) {
         this.data.clear();
-        this.data.put("uid", UID);
         this.data.put("idcamion", idcamion);
-        this.data.put("idproyecto", idProyecto);
 
         try {
-            db.delete("tags_disponibles", "uid = '" + UID + "'", null);
-            db.insert("tags", null, this.data);
+            db.update("tags_disponibles", this.data, "uid = '"+ UID +"'", null);
         } catch (Exception e) {
 
             Toast.makeText(this.context, this.context.getString(R.string.error_update_tag), Toast.LENGTH_SHORT).show();
@@ -93,9 +114,29 @@ class TagModel {
 
     boolean tagDisponible (String UID) {
         boolean result;
-        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "' and idcamion is null", null)) {
+        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "' and idcamion IS NULL", null)) {
             result = c != null && c.moveToFirst();
         }
         return result;
+    }
+
+    public static void sync() {
+        ContentValues data = new ContentValues();
+        try {
+            Cursor c = db.rawQuery("SELECT uid, idcamion FROM tags_disponibles WHERE idcamion IS NOT NULL", null);
+            if(c != null && c.moveToFirst()) {
+                do {
+                    data.clear();
+                    data.put("uid", c.getString(c.getColumnIndex("uid")) );
+                    data.put("idcamion", c.getString(c.getColumnIndex("idcamion")));
+                    data.put("idproyecto", User.getProyecto());
+
+                    db.insert("tags", null, data);
+                    db.execSQL("DELETE FROM tags_disponibles WHERE uid = '" + c.getString(c.getColumnIndex("uid")) + "'");
+                } while (c.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

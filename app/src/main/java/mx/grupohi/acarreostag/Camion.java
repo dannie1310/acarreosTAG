@@ -50,7 +50,7 @@ class Camion {
 
     ArrayList<String> getArrayListPlacas() {
         ArrayList<String> data = new ArrayList<>();
-        Cursor c = db.rawQuery("SELECT placas, economico FROM camiones ORDER BY economico ASC", null);
+        Cursor c = db.rawQuery("SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("-- Seleccione --");
@@ -65,7 +65,7 @@ class Camion {
 
     ArrayList<String> getArrayListId() {
         ArrayList<String> data = new ArrayList<>();
-        Cursor c = db.rawQuery("SELECT idcamion, placas, economico FROM camiones ORDER BY economico ASC", null);
+        Cursor c = db.rawQuery("SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("0");
