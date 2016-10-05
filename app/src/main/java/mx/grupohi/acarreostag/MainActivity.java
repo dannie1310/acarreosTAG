@@ -165,21 +165,23 @@ public class MainActivity extends AppCompatActivity
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 String UID = nfc.idTag(myTag);
                 Log.i("UID", UID);
-                if(tags.exists(UID)) {
+            /*    if(tags.exists(UID)) {
 
                     if (tags.tagDisponible(UID)) {
-
-                        mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
-                        nfc.writeID(myTag, 0, 1, mensaje);
-                        tags.update(UID, idCamion, user.getIdProyecto());
+*/
+                        //mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
+                       // nfc.writeID(myTag, 0, 1, mensaje);
+                       // nfc.clean(myTag);
+                        nfc.changeKey(myTag,10);
+                        //tags.update(UID, idCamion, user.getIdProyecto());
                         btnWrite.setEnabled(true);
                         spinner.setEnabled(true);
-                    } else {
+                   /* } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
-                }
+                }*/
                 progress.dismiss();
             }
             btnWrite.setEnabled(true);

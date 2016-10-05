@@ -310,4 +310,70 @@ public class NFCTag {
     public static String byteArrayToHexString(byte[] byteArray){
         return String.format("%0" + (byteArray.length * 2) + "X", new BigInteger(1,byteArray));
     }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
+    void changeKey(Tag tag, int sector) {
+        String text="FFD600FF078069FFFFFF";
+       // String text="000000000000FF078069FFFFFFFFFFFF";
+        int bloque=43;
+
+        MifareClassic mf = MifareClassic.get(tag);
+        MifareClassic mfb=MifareClassic.get(tag);
+        byte[] value=  text.getBytes();
+       byte[] y = hexStringToByteArray("D3F7D3F7D3F7D3F7D3F7D3F778778843");
+        byte[] toRead=null;
+        //System.out.println(byteArrayToHexString(toRead));
+        try {
+            mf.connect();
+
+            boolean auth = false;
+
+            byte[] z= MifareClassic.KEY_DEFAULT;
+            String ss=byteArrayToHexString(z);
+            System.out.println("a: "+ ss);
+            auth = mf.authenticateSectorWithKeyA(sector, MifareClassic.KEY_DEFAULT);
+
+
+            if (auth) {
+                byte[] toWrite = new byte[y.length];
+
+               /* toRead = mf.readBlock(bloque);
+
+                String x=byteArrayToHexString(toRead);
+                System.out.println(x);*/
+               //for (int iw = 0; iw < value.length; iw++) {
+
+                 //       toWrite[iw] = value[iw];
+                   // Log.i("aqui",toWrite.toString());
+                //}
+                //Log.i("aqui",toWrite.toString());
+                String x = byteArrayToHexString(y);
+                System.out.println("array: "+ x+ " " + y.length);
+               /* for (int iw = 0; iw < y.length; iw++) {
+                    if (iw < y.length) {
+                        toWrite[iw] = y[iw];
+                    }
+                }*/
+
+                    mf.writeBlock(bloque, y);
+                mf.close();
+                    mfb.connect(); boolean a= false; a=mfb.authenticateSectorWithKeyB(sector, MifareClassic.KEY_DEFAULT);
+                    mfb.writeBlock(bloque, y);
+                }
+            else{
+                System.out.println("ERRROR");
+            }
+
+            mfb.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
