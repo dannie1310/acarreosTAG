@@ -14,13 +14,16 @@ import org.json.JSONObject;
 
 public class User {
 
+    private static String usr;
+    private static String bd;
+    private static String proyecto;
     private Context context;
 
     private static SQLiteDatabase db;
     private static DBScaSqlite db_sca;
 
     private String name;
-    private String proyecto;
+    private String pass;
 
     public User(Context context) {
         this.context = context;
@@ -49,7 +52,15 @@ public class User {
         return name;
     }
 
-    public String getProyecto() {
+    public String getPass() {
+        Cursor c = db.rawQuery("SELECT pass FROM user LIMIT 1", null);
+        if (c.moveToFirst()) {
+            pass = c.getString(c.getColumnIndex("pass"));
+        }
+        return pass;
+    }
+
+    public static String getProyecto() {
         Cursor c = db.rawQuery("SELECT descripcion_database FROM user LIMIT 1", null);
         if (c.moveToFirst()) {
             proyecto = c.getString(c.getColumnIndex("descripcion_database"));
@@ -63,5 +74,21 @@ public class User {
             proyecto = c.getString(c.getColumnIndex("idproyecto"));
         }
         return proyecto;
+    }
+    
+    public static String getUser() {
+        Cursor c = db.rawQuery("SELECT usr FROM user LIMIT 1", null);
+        if (c.moveToFirst()) {
+            usr = c.getString(c.getColumnIndex("usr"));
+        }
+        return usr;
+    }
+    
+    public static String getBaseDatos() {
+        Cursor c = db.rawQuery("SELECT base_datos FROM user LIMIT 1", null);
+        if (c.moveToFirst()) {
+            bd = c.getString(c.getColumnIndex("base_datos"));
+        }
+        return bd;
     }
 }
