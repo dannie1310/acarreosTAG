@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity
     private Camion camiones;
     private AlertDialog.Builder alertDialog;
     private NFCTag nfc;
-    private Tag myTag;
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
     private IntentFilter writeTagFilters[];
@@ -64,7 +63,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        nfc = new NFCTag(myTag, this);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -120,12 +118,19 @@ public class MainActivity extends AppCompatActivity
         spinner.setAdapter(a);
 
         adapter = NfcAdapter.getDefaultAdapter(this);
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[]{tagDetected};
+        if (adapter == null) {
+            Toast.makeText(this, getString(R.string.error_no_nfc), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         checkNfcEnabled();
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        //tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[]{tagDetected};
+
 
         btnWrite = (Button) findViewById(R.id.button_write);
 
@@ -152,7 +157,9 @@ public class MainActivity extends AppCompatActivity
         String mensaje;
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                Tag myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                nfc = new NFCTag(myTag, this);
+
                 String UID = nfc.idTag(myTag);
                 Log.i("UID", UID);
 
@@ -160,9 +167,7 @@ public class MainActivity extends AppCompatActivity
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
                         nfc.writeID(myTag, 0, 1, mensaje);
-                        tags.update(UID, idCamion, user.getIdProyecto());
-                        btnWrite.setEnabled(true);
-                        spinner.setEnabled(true);
+                        tags.update(UID, idCamion);
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
                     }
@@ -176,23 +181,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onResume() {
+        super.onResume();
+        checkNfcEnabled();
     }
 
+    @Override
     public void onPause() {
         super.onPause();
         adapter.disableForegroundDispatch(this);
     }
-
-    public void onResume() {
-        super.onResume();
-        checkNfcEnabled();
-        if(writeMode) {
-            adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
-        }
-    }
-
     private void WriteModeOn() {
         writeMode = true;
         adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);

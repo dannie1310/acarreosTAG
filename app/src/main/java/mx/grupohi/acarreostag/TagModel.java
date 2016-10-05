@@ -92,6 +92,7 @@ class TagModel {
                     json.put("idtag", c.getString(c.getColumnIndex("idtag")));
 
                     JSON.put(i + "", json);
+                    i++;
                 } while (c.moveToNext());
             }
         } catch (Exception e) {
@@ -100,21 +101,19 @@ class TagModel {
         return JSON;
     }
 
-    void update(String UID, String idcamion, String idTag) {
+    void update(String UID, String idcamion) {
+        this.data.clear();
+        this.data.putNull("idcamion");
+        db.update("tags_disponibles", this.data, "idcamion = '"  + idcamion + "'", null);
+
         this.data.clear();
         this.data.put("idcamion", idcamion);
-
-        try {
-            db.update("tags_disponibles", this.data, "uid = '"+ UID +"'", null);
-        } catch (Exception e) {
-
-            Toast.makeText(this.context, this.context.getString(R.string.error_update_tag), Toast.LENGTH_SHORT).show();
-        }
+        db.update("tags_disponibles", this.data, "uid = '"+ UID +"'", null);
     }
 
     boolean tagDisponible (String UID) {
         boolean result;
-        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "' and idcamion IS NULL", null)) {
+        try (Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "'", null)) {
             result = c != null && c.moveToFirst();
         }
         return result;

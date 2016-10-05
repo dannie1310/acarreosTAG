@@ -32,5 +32,6 @@
     <string name="title_activity_sync">SyncActivity</string>
     <string name="mnetodo_sync">capturaConfiguracion</string>
     <string name="error_no_sync">¡Error! No se pudo realizar la soncronización</string>
+    <string name="error_no_nfc">Su dispositivo no posee lector NFC. No se puede ejecutar esta aplicación.</string>
 
 </resources>
