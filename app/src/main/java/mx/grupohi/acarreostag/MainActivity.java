@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity
 
     private Intent loginActivity;
     private Button btnWrite;
+    private FloatingActionButton cancel;
     private Spinner  spinner ;
     private HashMap<String, String> spinnerMap;
 
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     private IntentFilter writeTagFilters[];
     private Intent SyncActivity;
     private String idCamion;
-
+    private AlertDialog alerta;
     private boolean writeMode;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
@@ -71,7 +72,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         infoCamion = (TextView) findViewById(R.id.textViewInfoCamion);
-
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -164,19 +164,46 @@ public class MainActivity extends AppCompatActivity
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                String placa = spinner.getSelectedItem().toString();
-                idCamion = spinnerMap.get(placa);
+
+              /*  AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
+                alert.setMessage("Acerca el Tag")
+                        .setTitle("")
+                        .setIcon(R.drawable.ic_sync_black_24dp)
+                        .setInverseBackgroundForced(true)
+                        .setCancelable(false)
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int id){
+                                btnWrite.setEnabled(true);
+                                spinner.setEnabled(true);
+                                WriteModeOff();
+                                dialog.cancel();
+                            }
+                    });*/
+
 
                 if(Objects.equals(idCamion, "0"))  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
 
                     checkNfcEnabled();
-                    progress=new ProgressDialog(MainActivity.this);
-                    progress.setMessage("Acerque el Tag");
+
+
+                   progress=new ProgressDialog(MainActivity.this);
+                    progress.setMessage("Acerque el Tag para Configurarlo");
                     progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     progress.setIndeterminate(true);
                     progress.setProgress(50);
+                    progress.setCancelable(false);
+                    progress.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            btnWrite.setEnabled(true);
+                            spinner.setEnabled(true);
+                            WriteModeOff();
+                            dialog.dismiss();
+                        }
+                    });
                     progress.show();
                     WriteModeOn();
                 }
@@ -194,7 +221,7 @@ public class MainActivity extends AppCompatActivity
 
                 String UID = nfc.idTag(myTag);
                 Log.i("UID", UID);
-                if(tags.exists(UID)) {
+                if (tags.exists(UID)) {
 
                     if (tags.tagDisponible(UID)) {
 
@@ -207,10 +234,15 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
                 }
-                progress.dismiss();
+
+                progress.cancel();
+                btnWrite.setEnabled(true);
+                spinner.setEnabled(true);
+
+
+
+
             }
-            btnWrite.setEnabled(true);
-            spinner.setEnabled(true);
         }
     }
 
@@ -230,7 +262,6 @@ public class MainActivity extends AppCompatActivity
         adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
         btnWrite.setEnabled(false);
         spinner.setEnabled(false);
-
     }
 
     private void WriteModeOff() {
