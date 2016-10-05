@@ -16,10 +16,10 @@ import java.util.ArrayList;
 
 class Camion {
 
+    private static android.database.sqlite.SQLiteDatabase db;
     private Context context;
     private ContentValues data;
 
-    private SQLiteDatabase db;
     private DBScaSqlite db_sca;
 
      Camion(Context context) {
@@ -29,6 +29,10 @@ class Camion {
         db = db_sca.getWritableDatabase();
     }
 
+    public static Cursor get(String idCamion) {
+        Cursor c = db.rawQuery("SELECT * FROM camiones WHERE idcamion = '" + idCamion + "'", null);
+        return c;
+    }
     boolean create(JSONObject data) throws Exception {
 
         Log.i("JSON", data.toString());

@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -41,11 +44,13 @@ public class MainActivity extends AppCompatActivity
     private Intent loginActivity;
     private Button btnWrite;
     private Spinner  spinner ;
+    private HashMap<String, String> spinnerMap;
 
     private User user;
     private TagModel tags;
     private Camion camiones;
     private AlertDialog.Builder alertDialog;
+    private TextView infoCamion;
     private NFCTag nfc;
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        infoCamion = (TextView) findViewById(R.id.textViewInfoCamion);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,13 +106,29 @@ public class MainActivity extends AppCompatActivity
 
 
         spinner = (Spinner) findViewById(R.id.spinner);
+        if(spinner != null) {
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                    String placa = spinner.getSelectedItem().toString();
+                    idCamion = spinnerMap.get(placa);
+                    setInfoCamion(idCamion);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        }
         camiones = new Camion(this);
 
         final ArrayList <String> placas = camiones.getArrayListPlacas();
         final ArrayList <String> ids = camiones.getArrayListId();
 
         String[] spinnerArray = new String[ids.size()];
-        final HashMap<String,String> spinnerMap = new HashMap<>();
+        spinnerMap = new HashMap<>();
 
         for (int i = 0; i < ids.size(); i++) {
             spinnerMap.put(placas.get(i), ids.get(i));
@@ -139,9 +161,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View v) {
-                String placa = spinner.getSelectedItem().toString();
-                idCamion = spinnerMap.get(placa);
-
                 if(Objects.equals(idCamion, "0"))  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
@@ -257,6 +276,43 @@ public class MainActivity extends AppCompatActivity
         startActivity(SyncActivity);
     }
 
+    private void setInfoCamion(String idCamion) {
+        if (idCamion != "0") {
+            Cursor c = Camion.get(idCamion);
+            c.moveToFirst();
+            infoCamion.setText(
+                    Html.fromHtml("<h1>Camion:" +
+                            c.getString(
+                                    c.getColumnIndex("economico")
+                            ) +
+                            "</h1><font color=\"#A0A0A0\">placas: </font> " +
+                            c.getString(
+                                    c.getColumnIndex("placas")
+                            ) +
+                            "<br><font color=\"#A0A0A0\">modelo: </font>" +
+                            c.getString(
+                                    c.getColumnIndex("modelo")
+                            ) +
+                            "<br><font color=\"#A0A0A0\">Ancho: </font>" +
+                            c.getString(
+                                    c.getColumnIndex("ancho")
+                            ) +
+                            "<br><font color=\"#A0A0A0\">Alto: </font>" +
+                            c.getString(
+                                    c.getColumnIndex("alto")
+                            ) +
+                            "<br><font color=\"#A0A0A0\">Largo: </font>" +
+                            c.getString(
+                                    c.getColumnIndex("largo")
+                            ) +
+                            ""
+                    )
+
+            );
+        } else {
+            infoCamion.setText("");
+        }
+    }
     private void checkNfcEnabled() {
         Boolean nfcEnabled = adapter.isEnabled();
         if (!nfcEnabled) {
