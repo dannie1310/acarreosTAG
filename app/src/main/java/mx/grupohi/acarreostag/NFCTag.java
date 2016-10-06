@@ -83,7 +83,7 @@ public class NFCTag {
         }
     }
 
-    void writeID(Tag tag, int sector, int bloque, String mensaje){
+    boolean writeID(Tag tag, int sector, int bloque, String mensaje){
 
         MifareClassic mfc = MifareClassic.get(tag);
 
@@ -106,14 +106,12 @@ public class NFCTag {
                     mfc.writeBlock(bloque, toWrite);
                 }
             }
-            Toast.makeText(context, context.getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
-
             mfc.close();
-
+            return true;
 
         } catch (Exception fe) {
-            Toast.makeText(context, context.getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
             fe.printStackTrace();
+            return false;
         }
     }
 

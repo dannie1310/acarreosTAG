@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.media.Image;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -31,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity
     private IntentFilter writeTagFilters[];
     private Intent SyncActivity;
     private String idCamion;
+    private ImageView nfcImage;
+    private TextView mainTitle;
+    private FloatingActionButton fabCancel;
 
     private boolean writeMode;
 
@@ -68,9 +73,17 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_activity_main);
         setContentView(R.layout.activity_main);
+
+        nfcImage = (ImageView) findViewById(R.id.nfc_background);
+        nfcImage.setVisibility(View.GONE);
+
+        mainTitle = (TextView) findViewById(R.id.mainTitle);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         infoCamion = (TextView) findViewById(R.id.textViewInfoCamion);
+
+        fabCancel = (FloatingActionButton) findViewById(R.id.fabCancel);
+        fabCancel.setVisibility(View.GONE);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -152,7 +165,6 @@ public class MainActivity extends AppCompatActivity
 
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        //tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[]{tagDetected};
 
 
@@ -168,19 +180,6 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     checkNfcEnabled();
                     WriteModeOn();
-                    ProgressDialog myDialog = new ProgressDialog(MainActivity.this);
-                    myDialog.setMessage("Acerque el tag NFC a su dispositivo móvil para escribir los datos");
-                    myDialog.setCancelable(false);
-                    myDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            btnWrite.setEnabled(true);
-                            spinner.setEnabled(true);
-                            WriteModeOff();
-                        }
-                    });
-                    myDialog.show();
                 }
             }
         });
@@ -200,7 +199,12 @@ public class MainActivity extends AppCompatActivity
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
-                        nfc.writeID(myTag, 0, 1, mensaje);
+                        boolean res = nfc.writeID(myTag, 0, 1, mensaje);
+                        if(res) {
+                            Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
+                        }
                         tags.update(UID, idCamion);
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
@@ -209,8 +213,19 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
                 }
             }
-            btnWrite.setEnabled(true);
+            /*infoCamion.setEnabled(true);
             spinner.setEnabled(true);
+            mainTitle.setEnabled(true);
+            btnWrite.setEnabled(true);
+
+            fabCancel.setVisibility(View.GONE);
+            nfcImage.setVisibility(View.GONE);*/
+            fabCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    WriteModeOff();
+                }
+            });
         }
     }
 
@@ -218,6 +233,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
         checkNfcEnabled();
+        WriteModeOff();
     }
 
     @Override
@@ -225,17 +241,32 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         adapter.disableForegroundDispatch(this);
     }
+
     private void WriteModeOn() {
         writeMode = true;
         adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
+
         btnWrite.setEnabled(false);
+        infoCamion.setEnabled(false);
         spinner.setEnabled(false);
+        mainTitle.setEnabled(false);
+
+        fabCancel.setVisibility(View.VISIBLE);
+        nfcImage.setVisibility(View.VISIBLE);
 
     }
 
     private void WriteModeOff() {
         writeMode = false;
         adapter.disableForegroundDispatch(this);
+
+        infoCamion.setEnabled(true);
+        spinner.setEnabled(true);
+        mainTitle.setEnabled(true);
+        btnWrite.setEnabled(true);
+
+        fabCancel.setVisibility(View.GONE);
+        nfcImage.setVisibility(View.GONE);
     }
 
 
