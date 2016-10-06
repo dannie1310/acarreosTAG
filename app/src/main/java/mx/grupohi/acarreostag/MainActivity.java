@@ -3,6 +3,7 @@ package mx.grupohi.acarreostag;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -12,6 +13,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresPermission;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -166,13 +168,27 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     checkNfcEnabled();
                     WriteModeOn();
+                    ProgressDialog myDialog = new ProgressDialog(MainActivity.this);
+                    myDialog.setMessage("Acerque el tag NFC a su dispositivo móvil para escribir los datos");
+                    myDialog.setCancelable(false);
+                    myDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            btnWrite.setEnabled(true);
+                            spinner.setEnabled(true);
+                            WriteModeOff();
+                        }
+                    });
+                    myDialog.show();
                 }
             }
         });
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
+
         String mensaje;
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
@@ -180,7 +196,6 @@ public class MainActivity extends AppCompatActivity
                 nfc = new NFCTag(myTag, this);
 
                 String UID = nfc.idTag(myTag);
-                Log.i("UID", UID);
 
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
@@ -224,16 +239,11 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @TargetApi(Build.VERSION_CODES.DONUT)
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        assert drawer != null;
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 
     @TargetApi(Build.VERSION_CODES.DONUT)
@@ -285,11 +295,11 @@ public class MainActivity extends AppCompatActivity
                             c.getString(
                                     c.getColumnIndex("economico")
                             ) +
-                            "</h1><font color=\"#A0A0A0\">placas: </font> " +
+                            "</h1><font color=\"#A0A0A0\">Placas: </font> " +
                             c.getString(
                                     c.getColumnIndex("placas")
                             ) +
-                            "<br><font color=\"#A0A0A0\">modelo: </font>" +
+                            "<br><font color=\"#A0A0A0\">Modelo: </font>" +
                             c.getString(
                                     c.getColumnIndex("modelo")
                             ) +

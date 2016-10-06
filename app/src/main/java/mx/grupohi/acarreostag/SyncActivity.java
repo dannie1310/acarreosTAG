@@ -32,6 +32,7 @@ public class SyncActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getString(R.string.title_activity_sync));
         setContentView(R.layout.activity_sync);
 
         user = new User(getApplicationContext());
