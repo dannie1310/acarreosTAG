@@ -8,11 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.media.Image;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresPermission;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -30,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +47,6 @@ public class MainActivity extends AppCompatActivity
 
     private Intent loginActivity;
     private Button btnWrite;
-    private FloatingActionButton cancel;
     private Spinner  spinner ;
     private HashMap<String, String> spinnerMap;
 
@@ -53,14 +55,16 @@ public class MainActivity extends AppCompatActivity
     private Camion camiones;
     private AlertDialog.Builder alertDialog;
     private TextView infoCamion;
-    private ProgressDialog progress;
     private NFCTag nfc;
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
     private IntentFilter writeTagFilters[];
     private Intent SyncActivity;
     private String idCamion;
-    private AlertDialog alerta;
+    private ImageView nfcImage;
+    private TextView mainTitle;
+    private FloatingActionButton fabCancel;
+
     private boolean writeMode;
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
@@ -69,9 +73,24 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_activity_main);
         setContentView(R.layout.activity_main);
+
+        nfcImage = (ImageView) findViewById(R.id.nfc_background);
+        nfcImage.setVisibility(View.GONE);
+
+        mainTitle = (TextView) findViewById(R.id.mainTitle);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         infoCamion = (TextView) findViewById(R.id.textViewInfoCamion);
+
+        fabCancel = (FloatingActionButton) findViewById(R.id.fabCancel);
+        fabCancel.setVisibility(View.GONE);
+        fabCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WriteModeOff();
+            }
+        });
+
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -152,7 +171,6 @@ public class MainActivity extends AppCompatActivity
 
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        //tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[]{tagDetected};
 
 
@@ -161,50 +179,12 @@ public class MainActivity extends AppCompatActivity
         if(btnWrite != null)
         btnWrite.setOnClickListener(new View.OnClickListener() {
 
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-
-              /*  AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-
-                alert.setMessage("Acerca el Tag")
-                        .setTitle("")
-                        .setIcon(R.drawable.ic_sync_black_24dp)
-                        .setInverseBackgroundForced(true)
-                        .setCancelable(false)
-                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int id){
-                                btnWrite.setEnabled(true);
-                                spinner.setEnabled(true);
-                                WriteModeOff();
-                                dialog.cancel();
-                            }
-                    });*/
-
-
                 if(Objects.equals(idCamion, "0"))  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
-
                     checkNfcEnabled();
-
-
-                   progress=new ProgressDialog(MainActivity.this);
-                    progress.setMessage("Acerque el Tag para Configurarlo");
-                    progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    progress.setIndeterminate(true);
-                    progress.setProgress(50);
-                    progress.setCancelable(false);
-                    progress.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            btnWrite.setEnabled(true);
-                            spinner.setEnabled(true);
-                            WriteModeOff();
-                            dialog.dismiss();
-                        }
-                    });
-                    progress.show();
                     WriteModeOn();
                 }
             }
@@ -212,7 +192,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
+
         String mensaje;
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
@@ -220,13 +201,16 @@ public class MainActivity extends AppCompatActivity
                 nfc = new NFCTag(myTag, this);
 
                 String UID = nfc.idTag(myTag);
-                Log.i("UID", UID);
-                if (tags.exists(UID)) {
 
+                if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
-
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
-                        nfc.writeID(myTag, 0, 1, mensaje);
+                        boolean res = nfc.writeID(myTag, 0, 1, mensaje);
+                        if(res) {
+                            Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
+                        }
                         tags.update(UID, idCamion);
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
@@ -234,15 +218,14 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
                 }
-
-                progress.cancel();
-                btnWrite.setEnabled(true);
-                spinner.setEnabled(true);
-
-
-
-
             }
+            /*infoCamion.setEnabled(true);
+            spinner.setEnabled(true);
+            mainTitle.setEnabled(true);
+            btnWrite.setEnabled(true);
+
+            fabCancel.setVisibility(View.GONE);
+            nfcImage.setVisibility(View.GONE);*/
         }
     }
 
@@ -250,6 +233,7 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
         checkNfcEnabled();
+        WriteModeOff();
     }
 
     @Override
@@ -257,29 +241,40 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         adapter.disableForegroundDispatch(this);
     }
+
     private void WriteModeOn() {
         writeMode = true;
         adapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
+
         btnWrite.setEnabled(false);
+        infoCamion.setEnabled(false);
         spinner.setEnabled(false);
+        mainTitle.setEnabled(false);
+
+        fabCancel.setVisibility(View.VISIBLE);
+        nfcImage.setVisibility(View.VISIBLE);
+
     }
 
     private void WriteModeOff() {
         writeMode = false;
         adapter.disableForegroundDispatch(this);
+
+        infoCamion.setEnabled(true);
+        spinner.setEnabled(true);
+        mainTitle.setEnabled(true);
+        btnWrite.setEnabled(true);
+
+        fabCancel.setVisibility(View.GONE);
+        nfcImage.setVisibility(View.GONE);
     }
 
 
-    @TargetApi(Build.VERSION_CODES.DONUT)
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        assert drawer != null;
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 
     @TargetApi(Build.VERSION_CODES.DONUT)
@@ -331,11 +326,11 @@ public class MainActivity extends AppCompatActivity
                             c.getString(
                                     c.getColumnIndex("economico")
                             ) +
-                            "</h1><font color=\"#A0A0A0\">placas: </font> " +
+                            "</h1><font color=\"#A0A0A0\">Placas: </font> " +
                             c.getString(
                                     c.getColumnIndex("placas")
                             ) +
-                            "<br><font color=\"#A0A0A0\">modelo: </font>" +
+                            "<br><font color=\"#A0A0A0\">Modelo: </font>" +
                             c.getString(
                                     c.getColumnIndex("modelo")
                             ) +
