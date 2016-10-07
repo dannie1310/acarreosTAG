@@ -84,6 +84,12 @@ public class MainActivity extends AppCompatActivity
 
         fabCancel = (FloatingActionButton) findViewById(R.id.fabCancel);
         fabCancel.setVisibility(View.GONE);
+        fabCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WriteModeOff();
+            }
+        });
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -220,12 +226,6 @@ public class MainActivity extends AppCompatActivity
 
             fabCancel.setVisibility(View.GONE);
             nfcImage.setVisibility(View.GONE);*/
-            fabCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    WriteModeOff();
-                }
-            });
         }
     }
 
