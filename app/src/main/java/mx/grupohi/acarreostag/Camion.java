@@ -16,10 +16,10 @@ import java.util.ArrayList;
 
 class Camion {
 
+    private static android.database.sqlite.SQLiteDatabase db;
     private Context context;
     private ContentValues data;
 
-    private SQLiteDatabase db;
     private DBScaSqlite db_sca;
 
      Camion(Context context) {
@@ -29,6 +29,10 @@ class Camion {
         db = db_sca.getWritableDatabase();
     }
 
+    public static Cursor get(String idCamion) {
+        Cursor c = db.rawQuery("SELECT * FROM camiones WHERE idcamion = '" + idCamion + "'", null);
+        return c;
+    }
     boolean create(JSONObject data) throws Exception {
 
         Log.i("JSON", data.toString());
@@ -50,7 +54,7 @@ class Camion {
 
     ArrayList<String> getArrayListPlacas() {
         ArrayList<String> data = new ArrayList<>();
-        Cursor c = db.rawQuery("SELECT placas, economico FROM camiones ORDER BY economico ASC", null);
+        Cursor c = db.rawQuery("SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("-- Seleccione --");
@@ -65,7 +69,7 @@ class Camion {
 
     ArrayList<String> getArrayListId() {
         ArrayList<String> data = new ArrayList<>();
-        Cursor c = db.rawQuery("SELECT idcamion, placas, economico FROM camiones ORDER BY economico ASC", null);
+        Cursor c = db.rawQuery("SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC", null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("0");

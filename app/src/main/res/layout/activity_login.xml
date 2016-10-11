@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,10 +18,18 @@
         android:layout_height="match_parent"
         tools:ignore="UselessParent">
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/ic_logo"
+                android:id="@+id/imageView2" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -54,7 +63,7 @@
 
                 <Button
                     android:id="@+id/iniciar_sesion_button"
-                    style="?android:textAppearanceSmall"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"

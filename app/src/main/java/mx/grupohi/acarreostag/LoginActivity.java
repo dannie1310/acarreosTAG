@@ -58,6 +58,10 @@ public class LoginActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        user = new User(this);
+        if(user.get()) {
+            nextActivity();
+        }
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_login_activity);
         setContentView(R.layout.activity_login);
@@ -68,14 +72,13 @@ public class LoginActivity extends AppCompatActivity  {
         formLayout = (TextInputLayout) findViewById(R.id.layout);
         mIniciarSesionButton = (Button) findViewById(R.id.iniciar_sesion_button);
 
-        user = new User(this);
         camion = new Camion(this);
         tag = new TagModel(this);
 
         mIniciarSesionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isNetworkStatusAvialable(getApplicationContext())) {
+                if (Util.isNetworkStatusAvialable(getApplicationContext())) {
                     attemptLogin();
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.error_internet, Toast.LENGTH_LONG).show();
@@ -104,17 +107,7 @@ public class LoginActivity extends AppCompatActivity  {
         mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
     }
-    public static boolean isNetworkStatusAvialable (Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null)
-        {
-            NetworkInfo netInfos = connectivityManager.getActiveNetworkInfo();
-            if(netInfos != null)
-                if(netInfos.isConnected())
-                    return true;
-        }
-        return false;
-    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -158,7 +151,6 @@ public class LoginActivity extends AppCompatActivity  {
                     mAuthTask.execute((Void) null);
                 }
             }).run();
-
         }
     }
 
@@ -186,15 +178,14 @@ public class LoginActivity extends AppCompatActivity  {
         @Override
         protected Boolean doInBackground(Void... params) {
             ContentValues values = new ContentValues();
-            values.put("metodo", "ConfDATA");
 
+            values.put("metodo", "ConfDATA");
             values.put("usr", mUsuario);
-            //values.put("pass", new MD5(mPassword).convert());
             values.put("pass", mPassword);
 
             try {
                 URL url = new URL("http://sca.grupohi.mx/android20160923.php");
-                JSON = JsonHttp(url, values);
+                JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();
                 errorMessage(getResources().getString(R.string.general_exception));
@@ -226,18 +217,16 @@ public class LoginActivity extends AppCompatActivity  {
 
                     value = user.create(data);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressDialog.setMessage("Actualizando catálogo de camiones...");
-                        }
-                    });
-
-                    JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
-                    Log.i("CAMIONES LENGTH", String.valueOf(camiones.length()));
+                    final JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
                     for (int i = 0; i < camiones.length(); i++) {
+                        final int finalI = i + 1;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.setMessage("Actualizando catálogo de camiones... \n Camion " + finalI + " de " + camiones.length());
+                            }
+                        });
                         value = camion.create(camiones.getJSONObject(i));
-                        Log.i("i", String.valueOf(i));
                     }
 
                     runOnUiThread(new Runnable() {
@@ -247,18 +236,28 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     });
 
-                    JSONArray tags = new JSONArray(JSON.getString("tags"));
-                    Log.i("TAGS LENGTH", String.valueOf(tags.length()));
+                    final JSONArray tags = new JSONArray(JSON.getString("tags"));
                     for (int i = 0; i < tags.length(); i++) {
+                        final int finalI = i + 1;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
+                            }
+                        });
                         value = tag.registrarTags(tags.getJSONObject(i));
-                        Log.i("i", String.valueOf(i));
                     }
 
-                    JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
-                    Log.i("TAGS DISPONIBLES", String.valueOf(tags_disponibles.length()));
+                    final JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
                     for (int i = 0; i < tags_disponibles.length(); i++) {
+                        final int finalI = i + 1;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
+                            }
+                        });
                         value = tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
-                        Log.i("i", String.valueOf(i));
                     }
 
                     return value;
@@ -286,52 +285,6 @@ public class LoginActivity extends AppCompatActivity  {
         }
     }
 
-    private void updateCatalogos(JSONObject JSON) {
-
-    }
-
-    private JSONObject JsonHttp(URL url, ContentValues values) throws JSONException {
-
-        String response = null;
-        try {
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-
-            OutputStream os = conn.getOutputStream();
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-            bw.write(getQuery(values));
-            bw.flush();
-
-            int statusCode = conn.getResponseCode();
-
-            Log.i("Status Code",String.valueOf(statusCode));
-
-            InputStream is = conn.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line, toAppend;
-
-            toAppend = br.readLine() + "\n";
-            sb.append(toAppend);
-            while ((line = br.readLine()) != null) {
-                toAppend = line + "\n";
-                sb.append(toAppend);
-            }
-
-            is.close();
-            response = sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            errorMessage(getResources().getString(R.string.general_exception));
-        }
-        return  new JSONObject(response);
-    }
-
     private void errorMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
@@ -351,23 +304,6 @@ public class LoginActivity extends AppCompatActivity  {
         });
     }
 
-    private String getQuery(ContentValues values) throws UnsupportedEncodingException
-    {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
 
-        for (Map.Entry<String, Object> entry : values.valueSet())
-        {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));
-        }
-        return result.toString();
-    }
 }
 
