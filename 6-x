@@ -1,0 +1,247 @@
+[33mcommit 31c0f5e3e19bd3656a88305f67d801fcb8eb9f0c[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Oct 7 10:52:01 2016 -0500
+
+    Corrección OnClick fab Button
+
+[33mcommit 724c8b6188b7274a2bdb6f071ec93524b8f1034b[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Oct 6 15:01:33 2016 -0500
+
+    NFC Imagen al escribir datos
+
+[33mcommit 0a192e381aee4aa8c1bb234e2d650fa526643247[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Oct 6 13:25:02 2016 -0500
+
+    Icono
+
+[33mcommit bc1532a79b6c8d2184755988b0d51a9278ea6871[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Oct 6 13:07:56 2016 -0500
+
+    Correción LoginActivity
+
+[33mcommit 545e1f7e81b19dad461649debb76fcb92883c912[m
+Author: Pacotreflip <Sealab2021>
+Date:   Wed Oct 5 12:03:37 2016 -0500
+
+    App Completa
+
+[33mcommit 89c5966634a9bdb53481ff680d16b0385a9ff94b[m
+Author: Pacotreflip <Sealab2021>
+Date:   Wed Oct 5 11:28:36 2016 -0500
+
+    App Completa
+
+[33mcommit 0161de09880f0df02b03a7b7f17514db8c1df4a8[m
+Author: Pacotreflip <Sealab2021>
+Date:   Tue Oct 4 15:02:06 2016 -0500
+
+    Sincronización Completa
+
+[33mcommit bdee8245e06242591e16c024dfd44bb18592b08d[m
+Author: Pacotreflip <Sealab2021>
+Date:   Mon Oct 3 14:39:41 2016 -0500
+
+    Modificaciónes Diseño MainActivity
+
+[33mcommit 5e58401a90577bc4312f1fad478ebbde2ef93252[m
+Author: Pacotreflip <Sealab2021>
+Date:   Mon Oct 3 13:34:21 2016 -0500
+
+    Recuperación TAGNFC
+    CLASS
+
+[33mcommit 69b3e63251659665dd87c80d57226c2ba03c8288[m
+Author: Pacotreflip <Sealab2021>
+Date:   Mon Oct 3 12:36:25 2016 -0500
+
+    Validación TAG's dispobnibles
+
+[33mcommit bdeaa9b7f021ae7473a04321d371638f8a931917[m
+Merge: 444e2b2 7c6e14d
+Author: Pacotreflip <Sealab2021>
+Date:   Mon Oct 3 11:11:23 2016 -0500
+
+    Merge remote-tracking branch 'origin/master' into integrar_dbenitezc
+    
+    # Conflicts:
+    #       app/src/main/java/mx/grupohi/acarreostag/MainActivity.java
+    #       app/src/main/java/mx/grupohi/acarreostag/TagModel.java
+
+[33mcommit 7c6e14d563bd7aaa8acb1570ddfab17456b1a25d[m
+Author: Pacotreflip <Sealab2021>
+Date:   Mon Oct 3 11:06:51 2016 -0500
+
+    Sync Activity
+
+[33mcommit 444e2b234b6b8a22a42f807469de33f9507807cb[m
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Mon Oct 3 11:04:59 2016 -0500
+
+    Escribir en Tag
+
+[33mcommit 6fd5d5ed2d40369c36ba1b967098ab63c3d21878[m
+Author: Jfesquivel <jfesquivel@grupohi.mx>
+Date:   Sat Oct 1 12:39:18 2016 -0500
+
+    Creación de Activity Sync
+
+[33mcommit 78f01d47e044a69d4b1d146a065a1e7687b985c0[m
+Author: Jfesquivel <jfesquivel@grupohi.mx>
+Date:   Sat Oct 1 00:47:00 2016 -0500
+
+    Correcciones
+
+[33mcommit d9ad3ca01575712a1b25d4384c396bbf444429b6[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 15:17:46 2016 -0500
+
+    Id Camion
+
+[33mcommit 3eae56f442113fd6079ade302fb80eeb4c4663f6[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 15:07:46 2016 -0500
+
+    Id Camion
+
+[33mcommit 2815433861fbcc5904ef816b12cfe70a75ceb9b0[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 15:06:15 2016 -0500
+
+    Id Camion
+
+[33mcommit 0bc8517df0f7666cec719569e223024e4f8b86f1[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 15:03:25 2016 -0500
+
+    ArrayList de camiones
+
+[33mcommit 99f8cd5de81dec1c343410f0edfab1168ac56d4f[m
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Fri Sep 30 13:35:29 2016 -0500
+
+    Integar
+
+[33mcommit 430e2edd49b7ac21f62b6dda39df893902d60001[m
+Merge: c3e860a eda2c3d
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Fri Sep 30 13:17:51 2016 -0500
+
+    Resolver Conflictos
+
+[33mcommit eda2c3d1126d354b331fee21343a704d4ee56b00[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 13:08:11 2016 -0500
+
+    ArrayList de camiones
+
+[33mcommit 840ba7708f792f1c43a327a95fa26228f6755281[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 12:49:31 2016 -0500
+
+    Modificación del tema
+
+[33mcommit c3e860a0020eef58f96a479fb5190f78d3ac283a[m
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Fri Sep 30 12:28:34 2016 -0500
+
+    Spinner funcionando
+
+[33mcommit b42afab0e773016355663dc1f83a89765c08091f[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 12:13:23 2016 -0500
+
+    Modificación del tema
+
+[33mcommit 8ccf12461b80838cf6a67838654a6fa063d95d03[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 10:53:57 2016 -0500
+
+    Cambiar nombre de MainActivity
+
+[33mcommit 4d77afdaedc6c6ad99d0d441ce64a851588700cc[m
+Author: Pacotreflip <Sealab2021>
+Date:   Fri Sep 30 10:50:55 2016 -0500
+
+    Integrar GitHub
+
+[33mcommit 5c3636e97c631a03f0b4ef69c21b13f7b3be3f82[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Sep 29 22:43:48 2016 -0500
+
+    Verificar Si Los Tags Están Sincronizados
+
+[33mcommit 8fae62bf976ebf87c10f9caca418a06aa12234e3[m
+Merge: 1830399 d7753d0
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Thu Sep 29 18:10:31 2016 -0500
+
+    correcciones
+
+[33mcommit d7753d0456cd9175baf802615ebccfabd9450ea3[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Sep 29 15:12:30 2016 -0500
+
+    Catálogo de camiones y tags registrado
+
+[33mcommit 183039961764990f186f2f790217d00f7254c3e4[m
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Thu Sep 29 15:06:37 2016 -0500
+
+    inicio Spinner
+
+[33mcommit 71358e7ce4e4d7b401501e473f84c37b2e185c6c[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Sep 29 15:05:59 2016 -0500
+
+    Catálogo de camiones y tags registrado
+
+[33mcommit 8146b26fb75c615f097f5b90321b270869e6f3ff[m
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Thu Sep 29 13:58:21 2016 -0500
+
+    Clase NFCTag
+
+[33mcommit a92c1a06c274aba56762feceecdb464c124973b4[m
+Author: Daniela <dbenitezc@ghi.mx>
+Date:   Thu Sep 29 12:18:09 2016 -0500
+
+    merge
+
+[33mcommit 940741c7322b313ac05c5298051f0cc8423ff6ee[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Sep 29 11:55:22 2016 -0500
+
+    Catálogo de camiones y tags registrado
+
+[33mcommit 08c1da0bd389b579b3f4c9e3808b23f23b6f6e73[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Sep 29 11:02:34 2016 -0500
+
+    Login
+
+[33mcommit 726678135259131481f0a973ee20bc22c255e34f[m
+Author: Pacotreflip <Sealab2021>
+Date:   Thu Sep 29 10:55:36 2016 -0500
+
+    Login y Modelos
+
+[33mcommit 5af9ceaeaaf8b67116f87e84e76aca4b1a8ca516[m
+Author: Pacotreflip <Sealab2021>
+Date:   Wed Sep 28 14:59:41 2016 -0500
+
+    Catálogo de camiones y tags registrado
+
+[33mcommit 4774be5efd7c98bfd7f7fe7692c192884aaed966[m
+Author: Pacotreflip <Sealab2021>
+Date:   Wed Sep 28 11:34:29 2016 -0500
+
+    Login
+
+[33mcommit 4194f79e26a001277279b3e41fe01641bf5062e6[m
+Author: Pacotreflip <Sealab2021>
+Date:   Tue Sep 27 15:10:00 2016 -0500
+
+    Login en Proceso
