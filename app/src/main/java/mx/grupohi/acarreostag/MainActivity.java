@@ -193,22 +193,19 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onNewIntent(final Intent intent) {
-
         String mensaje;
-        boolean x;
-
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 Tag myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 nfc = new NFCTag(myTag, this);
 
                 String UID = nfc.idTag(myTag);
-
-               /* if(tags.exists(UID)) {
+                if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
-                        boolean res = nfc.writeID(myTag, 0, 1, mensaje);
+                        boolean res = nfc.writeSector(myTag, 0, 1, mensaje,0);
                         if(res) {
+                            boolean cambio = nfc.changeKey(myTag);
                             Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
@@ -219,11 +216,8 @@ public class MainActivity extends AppCompatActivity
                     }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
-                }*/
-                nfc.changeKey(myTag, 9,37);
-                //nfc.writeID(myTag,9,36,"879kjt6yfu555");
-                String res=nfc.readSector(myTag,8);
-                System.out.println(res);
+                }
+
             }
             /*infoCamion.setEnabled(true);
             spinner.setEnabled(true);
