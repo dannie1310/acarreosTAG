@@ -33,5 +33,9 @@
     <string name="mnetodo_sync">capturaConfiguracion</string>
     <string name="error_no_sync">¡Error! No se pudo realizar la soncronización</string>
     <string name="error_no_nfc">Su dispositivo no posee lector NFC. No se puede ejecutar esta aplicación.</string>
+    <string name="key">773A7DB80405FF078069773A7DB80405</string>
+    <string name="keyUID">773A7DB80405FF05A069773A7DB80405</string>
+    <string name="def">FFFFFFFFFFFFFF078069FFFFFFFFFFFF</string>
+    <string name="password">773A7DB80405</string>
 
 </resources>

@@ -22,7 +22,7 @@ public class NFCTag {
 
     private Tag NFCTag;
     Context context;
-       private byte[] ky= hexStringToByteArray("773A7DB80405FF078069773A7DB80405");
+    private byte[] ky= hexStringToByteArray("773A7DB80405FF078069773A7DB80405");
     private byte[] kyUID= hexStringToByteArray("773A7DB80405FF05A069773A7DB80405");
     private byte[] pw= hexStringToByteArray("773A7DB80405");
     private byte[] def= hexStringToByteArray("FFFFFFFFFFFFFF078069FFFFFFFFFFFF");
@@ -209,37 +209,37 @@ public class NFCTag {
         return  aux;
     }
 
-    void clean(Tag tag){
+    void clean(Tag tag,int sector){
         MifareClassic mfc = MifareClassic.get(tag);
+
         try {
             mfc.connect();
+            int bloque= mfc.sectorToBlock(sector);
             int x = 0;
             int y = 0;
             int iw;
             int z = 1;
             int block;
-            int auxBlock = 2;
+            if (sector == 0) {
+                z = 2;
+                bloque=1;
+            } else {
+                z = 3;
+            }
             boolean auth = false;
-            for (y=0; y < 16; y++) {
-                auth = mfc.authenticateSectorWithKeyA(y, pw);
+                auth = mfc.authenticateSectorWithKeyA(sector, pw);
                 if (auth) {
                     byte[] toWrite = new byte[MifareClassic.BLOCK_SIZE];
 
-                    for (block = 0; block < auxBlock; block++) {
+                    for (block = 0; block <= z; block++) {
 
                         for (iw = 0; iw < MifareClassic.BLOCK_SIZE; iw++) {
                             toWrite[iw] = 0;
                         }
-                        mfc.writeBlock(z + block, toWrite);
+                        mfc.writeBlock(bloque, toWrite);
                         toWrite = new byte[MifareClassic.BLOCK_SIZE];
-                    }
-                    if (z == 1) {
-                        z = z + block + 1;
-                        auxBlock = auxBlock + 1;
-                    } else {
-                        z = z + block + 1;
-                    }
-                }
+                        bloque+=1;
+                   }
             }
             Toast.makeText(context, context.getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
             mfc.close();

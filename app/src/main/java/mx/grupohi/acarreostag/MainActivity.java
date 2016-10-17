@@ -200,6 +200,8 @@ public class MainActivity extends AppCompatActivity
                 nfc = new NFCTag(myTag, this);
 
                 String UID = nfc.idTag(myTag);
+                String x=nfc.readSector(myTag,0,1);
+                System.out.print("w "+x);
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
