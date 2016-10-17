@@ -227,7 +227,7 @@ public class LoginActivity extends AppCompatActivity  {
                             }
                         });
                         value = camion.create(camiones.getJSONObject(i));
-                    }
+                     }
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -236,28 +236,37 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     });
 
-                    final JSONArray tags = new JSONArray(JSON.getString("tags"));
-                    for (int i = 0; i < tags.length(); i++) {
-                        final int finalI = i + 1;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
-                            }
-                        });
-                        value = tag.registrarTags(tags.getJSONObject(i));
+
+                    try{
+                        final JSONArray tags = new JSONArray(JSON.getString("tags"));
+                        for (int i = 0; i < tags.length(); i++) {
+                            final int finalI = i + 1;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
+                                }
+                            });
+                            value = tag.registrarTags(tags.getJSONObject(i));
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
 
-                    final JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
-                    for (int i = 0; i < tags_disponibles.length(); i++) {
-                        final int finalI = i + 1;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
-                            }
-                        });
-                        value = tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
+                    try{
+                        final JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
+                        for (int i = 0; i < tags_disponibles.length(); i++) {
+                            final int finalI = i + 1;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
+                                }
+                            });
+                            value = tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
 
                     return value;
