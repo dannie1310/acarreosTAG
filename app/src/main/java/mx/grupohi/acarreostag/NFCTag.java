@@ -130,9 +130,7 @@ public class NFCTag {
         }
 
         resultado= aux+aux1;
-        Log.i("respuesta",resultado);
         return resultado;
-
     }
 
     String read(Tag tag) {
