@@ -22,7 +22,7 @@ class TagModel {
     private Context context;
     private ContentValues data;
 
-    public static SQLiteDatabase db;
+    private static SQLiteDatabase db;
     private DBScaSqlite db_sca;
 
     TagModel(Context context) {
@@ -56,7 +56,7 @@ class TagModel {
         return db.insert("tags_disponibles", null, this.data) > -1;
     }
 
-    public static boolean areSynchronized() {
+    static boolean areSynchronized() {
         Boolean result = true;
         try (Cursor c = db.rawQuery("SELECT idcamion FROM tags_disponibles", null)) {
             if (c != null && c.moveToFirst()) {
@@ -78,7 +78,7 @@ class TagModel {
         return  result;
     }
 
-    public static JSONObject getJSON() {
+    static JSONObject getJSON() {
         JSONObject JSON = new JSONObject();
         try {
             Cursor c = db.rawQuery("SELECT * FROM  tags_disponibles WHERE idcamion  IS NOT NULL", null);
@@ -90,11 +90,14 @@ class TagModel {
                     json.put("uid", c.getString(c.getColumnIndex("uid")));
                     json.put("idcamion", c.getString(c.getColumnIndex("idcamion")));
                     json.put("idtag", c.getString(c.getColumnIndex("idtag")));
+                    json.put("idproyecto_global", User.getIdProyecto());
 
                     JSON.put(i + "", json);
                     i++;
                 } while (c.moveToNext());
             }
+            assert c != null;
+            c.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,7 +122,7 @@ class TagModel {
         return result;
     }
 
-    public static void sync() {
+    static void sync() {
         ContentValues data = new ContentValues();
         try {
             Cursor c = db.rawQuery("SELECT uid, idcamion FROM tags_disponibles WHERE idcamion IS NOT NULL", null);
@@ -134,6 +137,8 @@ class TagModel {
                     db.execSQL("DELETE FROM tags_disponibles WHERE uid = '" + c.getString(c.getColumnIndex("uid")) + "'");
                 } while (c.moveToNext());
             }
+            assert c != null;
+            c.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
