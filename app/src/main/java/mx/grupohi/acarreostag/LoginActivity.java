@@ -215,19 +215,7 @@ public class LoginActivity extends AppCompatActivity  {
                     data.put("base_datos", (String) JSON.get("base_datos"));
                     data.put("descripcion_database", (String) JSON.get("descripcion_database"));
 
-                    value = user.create(data);
-
-                    final JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
-                    for (int i = 0; i < camiones.length(); i++) {
-                        final int finalI = i + 1;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressDialog.setMessage("Actualizando catálogo de camiones... \n Camion " + finalI + " de " + camiones.length());
-                            }
-                        });
-                        value = camion.create(camiones.getJSONObject(i));
-                     }
+                    user.create(data);
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -236,8 +224,23 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     });
 
+                    try {
+                        final JSONArray camiones = new JSONArray(JSON.getString("Camiones"));
+                        for (int i = 0; i < camiones.length(); i++) {
+                            final int finalI = i + 1;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressDialog.setMessage("Actualizando catálogo de camiones... \n Camion " + finalI + " de " + camiones.length());
+                                }
+                            });
+                            camion.create(camiones.getJSONObject(i));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                    try{
+                    try {
                         final JSONArray tags = new JSONArray(JSON.getString("tags"));
                         for (int i = 0; i < tags.length(); i++) {
                             final int finalI = i + 1;
@@ -247,13 +250,13 @@ public class LoginActivity extends AppCompatActivity  {
                                     mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
                                 }
                             });
-                            value = tag.registrarTags(tags.getJSONObject(i));
+                            tag.registrarTags(tags.getJSONObject(i));
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    try{
+                    try {
                         final JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
                         for (int i = 0; i < tags_disponibles.length(); i++) {
                             final int finalI = i + 1;
@@ -263,13 +266,13 @@ public class LoginActivity extends AppCompatActivity  {
                                     mProgressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
                                 }
                             });
-                            value = tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
+                            tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    return value;
+                    return true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

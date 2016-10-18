@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by JFEsquivel on 28/09/2016.
+ * Creado por JFEsquivel el 28/09/2016.
  */
 
 class Camion {
@@ -29,9 +29,8 @@ class Camion {
         db = db_sca.getWritableDatabase();
     }
 
-    public static Cursor get(String idCamion) {
-        Cursor c = db.rawQuery("SELECT * FROM camiones WHERE idcamion = '" + idCamion + "'", null);
-        return c;
+    static Cursor get(String idCamion) {
+        return db.rawQuery("SELECT * FROM camiones WHERE idcamion = '" + idCamion + "'", null);
     }
     boolean create(JSONObject data) throws Exception {
 
@@ -58,6 +57,7 @@ class Camion {
         if (c != null && c.moveToFirst())
             try {
                 data.add("-- Seleccione --");
+                data.add(c.getString(c.getColumnIndex("economico")) + " [" + c.getString(c.getColumnIndex("placas")) + "]");
                 while (c.moveToNext()) {
                     data.add(c.getString(c.getColumnIndex("economico")) + " [" + c.getString(c.getColumnIndex("placas")) + "]");
                 }
@@ -73,6 +73,7 @@ class Camion {
         if (c != null && c.moveToFirst())
             try {
                 data.add("0");
+                data.add(c.getString(c.getColumnIndex("idcamion")));
                 while (c.moveToNext()) {
                     data.add(c.getString(c.getColumnIndex("idcamion")));
                 }

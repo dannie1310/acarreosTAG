@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity
                     TextView tvu = (TextView) child.findViewById(R.id.textViewUser);
 
                     if (tvp != null) {
-                        tvp.setText(user.getProyecto());
+                        tvp.setText(User.getProyecto());
                     }
                     if (tvu != null) {
                         tvu.setText(user.getName());
@@ -135,6 +135,9 @@ public class MainActivity extends AppCompatActivity
                     String placa = spinner.getSelectedItem().toString();
                     idCamion = spinnerMap.get(placa);
                     setInfoCamion(idCamion);
+
+                    Log.i("IDCAMION", String.valueOf(idCamion));
+                    Log.i("PLACAS",placa);
                 }
 
                 @Override
@@ -200,11 +203,10 @@ public class MainActivity extends AppCompatActivity
                 nfc = new NFCTag(myTag, this);
 
                 String UID = nfc.idTag(myTag);
-                String x=nfc.readSector(myTag,0,1);
-                System.out.print("w "+x);
+
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
-                        mensaje = nfc.concatenar(idCamion, user.getIdProyecto());
+                        mensaje = nfc.concatenar(idCamion, User.getIdProyecto());
                         boolean res = nfc.writeSector(myTag, 0, 1, mensaje,0);
                         if(res) {
                             boolean cambio = nfc.changeKey(myTag);
@@ -293,7 +295,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-            if (tags.areSynchronized()) {
+            if (TagModel.areSynchronized()) {
                 user.deleteAll();
                 startActivity(loginActivity);
             } else {
@@ -326,7 +328,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setInfoCamion(String idCamion) {
-        if (idCamion != "0") {
+        if (!Objects.equals(idCamion, "0")) {
             Cursor c = Camion.get(idCamion);
             c.moveToFirst();
             infoCamion.setText(
