@@ -302,10 +302,11 @@ public class NFCTag {
         try {
             mf.connect();
             boolean auth = false;
+            boolean auth_cambio = false;
             for (y=0; y < 16; y++) {
                 auth = mf.authenticateSectorWithKeyA(y, MifareClassic.KEY_DEFAULT);
                 int bloque= mf.sectorToBlock(y);
-                if (auth) {
+                if (auth==true) {
                     if(y==0){
                         mf.writeBlock(bloque + 3, kyUID);
                     }
@@ -313,6 +314,15 @@ public class NFCTag {
                         mf.writeBlock(bloque + 3, ky);
                     }
                 }
+                else{
+                    auth_cambio= mf.authenticateSectorWithKeyA(y,pw);
+                    if(auth_cambio==true){
+                        if(y==0){
+                            mf.writeBlock(bloque + 3, kyUID);
+                        }
+                    }
+                }
+
             }
             mf.close();
             return true;
@@ -322,7 +332,7 @@ public class NFCTag {
         }
     }
 
-    boolean writeSector(Tag tag, int sector, int bloque, String mensaje, int tipo){
+    boolean writeSector(Tag tag, int sector, int bloque, String mensaje){
         MifareClassic mfc = MifareClassic.get(tag);
         int bq=mfc.sectorToBlock(sector);
         bq=bq+3;
@@ -334,12 +344,6 @@ public class NFCTag {
             mfc.connect();
             boolean auth = false;
             byte[] value =  mensaje.getBytes();
-            if(tipo==0){ //Escribir UID
-                auth = mfc.authenticateSectorWithKeyA(sector, MifareClassic.KEY_DEFAULT);
-            }
-            else{
-                auth = mfc.authenticateSectorWithKeyA(sector, pw);
-            }
             if (auth) {
                 byte[] toWrite = new byte[MifareClassic.BLOCK_SIZE];
                 for (int iw = 0; iw < MifareClassic.BLOCK_SIZE; iw++) {
@@ -351,6 +355,21 @@ public class NFCTag {
                     }
                 }
                 mfc.writeBlock(bloque, toWrite);
+            }
+            else {
+                auth = mfc.authenticateSectorWithKeyA(sector, pw);
+                if (auth) {
+                    byte[] toWrite = new byte[MifareClassic.BLOCK_SIZE];
+                    for (int iw = 0; iw < MifareClassic.BLOCK_SIZE; iw++) {
+                        if (x < value.length) {
+                            toWrite[iw] = value[x];
+                            x++;
+                        } else {
+                            toWrite[iw] = 0;
+                        }
+                    }
+                    mfc.writeBlock(bloque, toWrite);
+                }
             }
             mfc.close();
             return true;
