@@ -222,8 +222,10 @@ public class MainActivity extends AppCompatActivity
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, User.getIdProyecto());
+                        nfc.formatear(myTag);
                         boolean res = nfc.writeSector(myTag, 0, 1, mensaje);
                         contador=camiones.getNumeroViajes(Integer.valueOf(idCamion));
+                        nfc.clean(myTag, 1);
                         boolean x= nfc.writeSector(myTag, 2, 8, String.valueOf(contador));
                         if(res) {
                             boolean cambio = nfc.changeKey(myTag);
