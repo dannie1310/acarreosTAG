@@ -37,5 +37,6 @@
     <string name="keyUID">773A7DB80405FF05A069773A7DB80405</string>
     <string name="def">FFFFFFFFFFFFFF078069FFFFFFFFFFFF</string>
     <string name="password">773A7DB80405</string>
+    <string name="formatear">Se ha formateado con llaves privadas GHI </string>
 
 </resources>

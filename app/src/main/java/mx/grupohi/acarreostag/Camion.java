@@ -43,6 +43,7 @@ class Camion {
         this.data.put("largo", data.getString("largo"));
         this.data.put("alto", data.getString("alto"));
         this.data.put("economico", data.getString("economico"));
+        this.data.put("numero_viajes", data.getString("numero_viajes"));
 
         return db.insert("camiones", null, this.data) > -1;
     }
@@ -81,5 +82,15 @@ class Camion {
                 c.close();
             }
         return data;
+    }
+
+    public Integer getNumeroViajes(int idCamion){
+        Cursor c = db.rawQuery("SELECT numero_viajes FROM camiones WHERE idcamion ='" + idCamion + "'", null);
+        if(c!= null & c.moveToFirst()){
+            return c.getInt(0);
+        }
+        else{
+            return null;
+        }
     }
 }

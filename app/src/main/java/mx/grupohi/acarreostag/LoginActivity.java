@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity  {
                             mProgressDialog.setMessage("Actualizando datos de usuario...");
                         }
                     });
-
+                    Boolean value;
                     ContentValues data = new ContentValues();
 
                     data.put("idusuario", (String) JSON.get("IdUsuario"));
