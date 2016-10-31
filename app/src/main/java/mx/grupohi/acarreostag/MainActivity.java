@@ -243,13 +243,6 @@ public class MainActivity extends AppCompatActivity
                 }
 
             }
-            /*infoCamion.setEnabled(true);
-            spinner.setEnabled(true);
-            mainTitle.setEnabled(true);
-            btnWrite.setEnabled(true);
-
-            fabCancel.setVisibility(View.GONE);
-            nfcImage.setVisibility(View.GONE);*/
         }
     }
 

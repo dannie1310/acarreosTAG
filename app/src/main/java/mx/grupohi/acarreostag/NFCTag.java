@@ -25,7 +25,7 @@ public class NFCTag {
     private byte[] ky= hexStringToByteArray("773A7DB80405FF078069773A7DB80405");
     private byte[] kyUID= hexStringToByteArray("773A7DB80405FF05A069773A7DB80405");
     private byte[] pw= hexStringToByteArray("773A7DB80405");
-    private byte[] def= hexStringToByteArray("FFFFFFFFFFFFFF078069FFFFFFFFFFFF");
+    //private byte[] def= hexStringToByteArray("FFFFFFFFFFFFFF078069FFFFFFFFFFFF");
 
     public NFCTag(Tag NFCTag, Context context) {
         this.context=context;
@@ -215,8 +215,6 @@ public class NFCTag {
         try {
             mfc.connect();
             int bloque= mfc.sectorToBlock(sector);
-            int x = 0;
-            int y = 0;
             int iw;
             int z = 1;
             int block;
