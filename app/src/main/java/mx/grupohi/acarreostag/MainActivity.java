@@ -205,7 +205,8 @@ public class MainActivity extends AppCompatActivity
 
                 String UID = nfc.idTag(myTag);
 
-                /*System.out.println("Formateando TAG: "+UID);
+/*
+                System.out.println("Formateando TAG: "+UID);
                 boolean resp = nfc.formatear(myTag);
 
                 if (resp){
@@ -217,18 +218,18 @@ public class MainActivity extends AppCompatActivity
                 }
                 else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                }*/
+                }
+*/
 
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
                         mensaje = nfc.concatenar(idCamion, User.getIdProyecto());
                         nfc.formatear(myTag);
-                        boolean res = nfc.writeSector(myTag, 0, 1, mensaje);
                         contador=camiones.getNumeroViajes(Integer.valueOf(idCamion));
                         nfc.clean(myTag, 1);
-                        boolean x= nfc.writeSector(myTag, 2, 8, String.valueOf(contador));
-                        if(res) {
-                            boolean cambio = nfc.changeKey(myTag);
+
+                        if(nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador)) ) {
+                            nfc.changeKey(myTag);
                             Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
