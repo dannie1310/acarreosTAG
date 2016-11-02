@@ -12,6 +12,9 @@ import android.media.Image;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.TagTechnology;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresPermission;
@@ -38,6 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity
     private AlertDialog.Builder alertDialog;
     private TextView infoCamion;
     private NFCTag nfc;
+    private NFCUltralight nfcUltra;
     private NfcAdapter adapter;
     private PendingIntent pendingIntent;
     private IntentFilter writeTagFilters[];
@@ -193,48 +198,76 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+    public static String byteArrayToHexString(byte[] byteArray){
+        return String.format("%0" + (byteArray.length * 2) + "X", new BigInteger(1,byteArray));
+    }
 
     @Override
     protected void onNewIntent(final Intent intent) {
         String mensaje;
         int contador=0;
+        int tipo=0;
+        String UID="";
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 Tag myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                nfc = new NFCTag(myTag, this);
-
-                String UID = nfc.idTag(myTag);
-
-/*
-                System.out.println("Formateando TAG: "+UID);
-                boolean resp = nfc.formatear(myTag);
-
-                if (resp){
-                    for (int x=0; x<16; x++){
-                        nfc.clean(myTag, x);
+                String[] techs = myTag.getTechList();
+                for (String t : techs) {
+                    if (MifareClassic.class.getName().equals(t)) {
+                        nfc = new NFCTag(myTag, this);
+                        Toast.makeText(getApplicationContext(), "MIFARECLASSIC", Toast.LENGTH_SHORT).show();
+                        UID = nfc.idTag(myTag);
+                        tipo=1;
                     }
+                    else if (MifareUltralight.class.getName().equals(t)) {
+                        nfcUltra = new NFCUltralight(myTag, this);
+                        UID = byteArrayToHexString(myTag.getId());
 
-                    Toast.makeText(MainActivity.this, getString(R.string.formatear), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "MIFAREULTRALIGHT", Toast.LENGTH_SHORT).show();
+                        tipo=2;
+                    }
                 }
-                else {
-                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                }
-*/
+                System.out.println("UID: "+ UID);
+             /*
+                    System.out.println("Formateando TAG: "+UID);
+                    boolean resp = nfc.formatear(myTag);
+
+                    if (resp){
+                        for (int x=0; x<16; x++){
+                            nfc.clean(myTag, x);
+                        }
+
+                        Toast.makeText(MainActivity.this, getString(R.string.formatear), Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+            */
 
                 if(tags.exists(UID)) {
                     if (tags.tagDisponible(UID)) {
-                        mensaje = nfc.concatenar(idCamion, User.getIdProyecto());
-                        nfc.formatear(myTag);
-                        contador=camiones.getNumeroViajes(Integer.valueOf(idCamion));
-                        nfc.clean(myTag, 1);
+                        contador = camiones.getNumeroViajes(Integer.valueOf(idCamion));
+                        if(tipo==1) {
+                            mensaje = nfc.concatenar(idCamion, User.getIdProyecto());
+                            nfc.formatear(myTag);
+                            nfc.clean(myTag, 1);
+                            if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
+                                nfc.changeKey(myTag);
+                                Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        if(tipo==2){
+                            mensaje = nfcUltra.concatenar(idCamion, User.getIdProyecto());
+                            System.out.println("mensja: "+mensaje);
+                            nfcUltra.writePagina(myTag,4, mensaje);
+                            nfcUltra.write(myTag,7,String.valueOf(contador));
+                            //boolean m = nfcUltra.formateo(myTag);
 
-                        if(nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador)) ) {
-                            nfc.changeKey(myTag);
-                            Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                         }
                         tags.update(UID, idCamion);
+
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
                     }
