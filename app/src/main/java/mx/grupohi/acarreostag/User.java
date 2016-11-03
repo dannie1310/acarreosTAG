@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.FrameLayout;
+
 import mx.grupohi.acarreostag.DBScaSqlite;
 
 import org.json.JSONObject;
@@ -28,78 +30,121 @@ class User {
     User(Context context) {
         this.context = context;
         db_sca = new DBScaSqlite(context, "sca", null, 1);
-        db = db_sca.getWritableDatabase();
     }
 
     boolean create(ContentValues values) {
-        return db.insert("user", null, values) > -1;
+        db = db_sca.getWritableDatabase();
+        try{
+            return db.insert("user", null, values) > -1;
+        } finally {
+            db.close();
+        }
     }
 
     void deleteAll() {
-        db.execSQL("DELETE FROM user");
+        db = db_sca.getWritableDatabase();
+        try{
+            db.execSQL("DELETE FROM user");
+        } finally {
+            db.close();
+        }
     }
 
     boolean get() {
-        Boolean result;
+        db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM user", null);
-        result = c != null && c.moveToFirst();
-        assert c != null;
-        c.close();
-        return result;
+        try{
+            return c != null && c.moveToFirst();
+        } finally {
+            c.close();
+            db.close();
+        }
     }
 
     String getName() {
+        db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT nombre FROM user LIMIT 1", null);
-        if (c != null && c.moveToFirst()) {
-            name = c.getString(c.getColumnIndex("nombre"));
+        try{
+            if (c != null && c.moveToFirst()) {
+                name = c.getString(c.getColumnIndex("nombre"));
+            }
+            return name;
+        } finally {
+            c.close();
         }
-        assert c != null;
-        c.close();
-        return name;
     }
 
     String getPass() {
+        db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT pass FROM user LIMIT 1", null);
-        if (c.moveToFirst()) {
-            pass = c.getString(c.getColumnIndex("pass"));
+        try{
+            if (c.moveToFirst()) {
+                pass = c.getString(c.getColumnIndex("pass"));
+            }
+            return pass;
+        } finally {
+            c.close();
+            db.close();
         }
-        c.close();
-        return pass;
     }
 
-    static String getProyecto() {
+    static String getProyecto(Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT descripcion_database FROM user LIMIT 1", null);
-        if (c.moveToFirst()) {
-            proyecto = c.getString(c.getColumnIndex("descripcion_database"));
+        try{
+            if (c.moveToFirst()) {
+                proyecto = c.getString(c.getColumnIndex("descripcion_database"));
+            }
+            return proyecto;
+        } finally {
+            c.close();
+            db.close();
         }
-        c.close();
-        return proyecto;
     }
 
-    static String getIdProyecto() {
+    static String getIdProyecto(Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT idproyecto FROM user LIMIT 1", null);
-        if (c.moveToFirst()) {
-            proyecto = c.getString(c.getColumnIndex("idproyecto"));
+        try{
+            if (c.moveToFirst()) {
+                proyecto = c.getString(c.getColumnIndex("idproyecto"));
+            }
+            return proyecto;
+        } finally {
+            c.close();
+            db.close();
         }
-        c.close();
-        return proyecto;
     }
     
-    static String getUser() {
+    static String getUser(Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT usr FROM user LIMIT 1", null);
-        if (c.moveToFirst()) {
-            usr = c.getString(c.getColumnIndex("usr"));
+        try{
+            if (c.moveToFirst()) {
+                usr = c.getString(c.getColumnIndex("usr"));
+            }
+            return usr;
+        } finally {
+            c.close();
+            db.close();
         }
-        c.close();
-        return usr;
     }
     
-    static String getBaseDatos() {
+    static String getBaseDatos(Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT base_datos FROM user LIMIT 1", null);
-        if (c.moveToFirst()) {
-            bd = c.getString(c.getColumnIndex("base_datos"));
+        try{
+            if (c.moveToFirst()) {
+                bd = c.getString(c.getColumnIndex("base_datos"));
+            }
+            return bd;
+        } finally {
+            c.close();
+            db.close();
         }
-        c.close();
-        return bd;
     }
 }

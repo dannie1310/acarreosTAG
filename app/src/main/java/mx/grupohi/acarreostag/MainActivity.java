@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity
                     TextView tvu = (TextView) child.findViewById(R.id.textViewUser);
 
                     if (tvp != null) {
-                        tvp.setText(User.getProyecto());
+                        tvp.setText(User.getProyecto(getApplicationContext()));
                     }
                     if (tvu != null) {
                         tvu.setText(user.getName());
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onClick(View v) {
-                if(Objects.equals(idCamion, "0"))  {
+                if(idCamion == "0")  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
                     checkNfcEnabled();
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                     if (tags.tagDisponible(UID)) {
                         contador = camiones.getNumeroViajes(Integer.valueOf(idCamion));
                         if(tipo==1) {
-                            mensaje = nfc.concatenar(idCamion, User.getIdProyecto());
+                            mensaje = nfc.concatenar(idCamion, User.getIdProyecto(getApplicationContext()));
                             nfc.formatear(myTag);
                             nfc.clean(myTag, 1);
                             if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_logout) {
-            if (TagModel.areSynchronized()) {
+            if (TagModel.areSynchronized(getApplicationContext())) {
                 user.deleteAll();
                 startActivity(loginActivity);
             } else {
@@ -376,42 +376,46 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setInfoCamion(String idCamion) {
-        if (!Objects.equals(idCamion, "0")) {
-            Cursor c = Camion.get(idCamion);
-            c.moveToFirst();
-            infoCamion.setText(
-                    Html.fromHtml("<h1>Camion:" +
-                            c.getString(
-                                    c.getColumnIndex("economico")
-                            ) +
-                            "</h1><font color=\"#A0A0A0\">Placas: </font> " +
-                            c.getString(
-                                    c.getColumnIndex("placas")
-                            ) +
-                            "<br><font color=\"#A0A0A0\">Modelo: </font>" +
-                            c.getString(
-                                    c.getColumnIndex("modelo")
-                            ) +
-                            "<br><font color=\"#A0A0A0\">Ancho: </font>" +
-                            c.getString(
-                                    c.getColumnIndex("ancho")
-                            ) +
-                            "<br><font color=\"#A0A0A0\">Alto: </font>" +
-                            c.getString(
-                                    c.getColumnIndex("alto")
-                            ) +
-                            "<br><font color=\"#A0A0A0\">Largo: </font>" +
-                            c.getString(
-                                    c.getColumnIndex("largo")
-                            ) +
-                            ""
-                    )
-
-            );
+        if (idCamion != "0") {
+            Cursor c = Camion.get(idCamion, getApplicationContext());
+            try{
+                c.moveToFirst();
+                infoCamion.setText(
+                        Html.fromHtml("<h1>Camion:" +
+                                c.getString(
+                                        c.getColumnIndex("economico")
+                                ) +
+                                "</h1><font color=\"#A0A0A0\">Placas: </font> " +
+                                c.getString(
+                                        c.getColumnIndex("placas")
+                                ) +
+                                "<br><font color=\"#A0A0A0\">Modelo: </font>" +
+                                c.getString(
+                                        c.getColumnIndex("modelo")
+                                ) +
+                                "<br><font color=\"#A0A0A0\">Ancho: </font>" +
+                                c.getString(
+                                        c.getColumnIndex("ancho")
+                                ) +
+                                "<br><font color=\"#A0A0A0\">Alto: </font>" +
+                                c.getString(
+                                        c.getColumnIndex("alto")
+                                ) +
+                                "<br><font color=\"#A0A0A0\">Largo: </font>" +
+                                c.getString(
+                                        c.getColumnIndex("largo")
+                                ) +
+                                ""
+                        )
+                );
+            } finally {
+                c.close();
+            }
         } else {
             infoCamion.setText("");
         }
     }
+
     private void checkNfcEnabled() {
         Boolean nfcEnabled = adapter.isEnabled();
         if (!nfcEnabled) {

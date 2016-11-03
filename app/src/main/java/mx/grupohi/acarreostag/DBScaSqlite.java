@@ -40,10 +40,7 @@ public class DBScaSqlite extends SQLiteOpenHelper {
         for (String query : queries) {
             db.execSQL(query);
         }
-    }
 
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
+        db.close();
     }
 }
