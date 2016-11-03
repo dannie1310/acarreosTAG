@@ -45,7 +45,7 @@ public class SyncActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (Util.isNetworkStatusAvialable(getApplicationContext())) {
-                    if (!TagModel.areSynchronized()) {
+                    if (!TagModel.areSynchronized(getApplicationContext())) {
                         progressDialogSync = ProgressDialog.show(SyncActivity.this, "Sincronizando datos", "Por favor espere...", true);
                         new Thread(new Runnable() {
                             @Override
@@ -73,10 +73,10 @@ public class SyncActivity extends AppCompatActivity {
             ContentValues values = new ContentValues();
 
             values.put("metodo", getString(R.string.mnetodo_sync));
-            values.put("usr", user.getUser());
+            values.put("usr", user.getUser(getApplicationContext()));
             values.put("pass", user.getPass());
-            values.put("bd", user.getBaseDatos());
-            values.put("tag_camion", String.valueOf(TagModel.getJSON()));
+            values.put("bd", user.getBaseDatos(getApplicationContext()));
+            values.put("tag_camion", String.valueOf(TagModel.getJSON(getApplicationContext())));
 
             try {
                 URL url = new URL("http://sca.grupohi.mx/android20160923.php");
@@ -99,7 +99,7 @@ public class SyncActivity extends AppCompatActivity {
                     if(JSON.has("error")) {
                         errorMessage((String) JSON.get("error"));
                     } else if (JSON.has("msj")) {
-                        TagModel.sync();
+                        TagModel.sync(getApplicationContext());
                         new android.app.AlertDialog.Builder(SyncActivity.this)
                                 .setTitle("¡Hecho!")
                                 .setMessage((String) JSON.get("msj"))

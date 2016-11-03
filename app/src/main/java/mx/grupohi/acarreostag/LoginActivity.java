@@ -13,10 +13,13 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -42,8 +45,6 @@ public class LoginActivity extends AppCompatActivity  {
 
     private UserLoginTask mAuthTask = null;
 
-    DBScaSqlite db_sca;
-    SQLiteDatabase db;
     User user;
     Camion camion;
     TagModel tag;
@@ -86,7 +87,26 @@ public class LoginActivity extends AppCompatActivity  {
             }
         });
 
-        db_sca = new DBScaSqlite(this, "sca", null, 1);
+        mUsuarioView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    mPasswordView.requestFocus();
+                }
+                return false;
+            }
+        });
+
+        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    mIniciarSesionButton.performClick();
+                }
+                return false;
+            }
+        });
+
     }
 
     @Override
