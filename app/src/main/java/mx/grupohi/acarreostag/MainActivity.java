@@ -259,8 +259,9 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
                         if(tipo==2){
+                            nfcUltra.formateo(myTag);
                             mensaje = nfcUltra.concatenar(idCamion, User.getIdProyecto());
-                            if(nfcUltra.writePagina(myTag,4, mensaje) && nfcUltra.write(myTag,7,String.valueOf(contador))){
+                            if(nfcUltra.writePagina(myTag,4, mensaje) && nfcUltra.writeViaje(myTag,String.valueOf(contador))){
                                 Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();

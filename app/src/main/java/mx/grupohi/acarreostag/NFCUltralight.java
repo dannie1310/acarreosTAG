@@ -136,6 +136,33 @@ public class NFCUltralight {
         }
     }
 
+    public boolean writeViaje(Tag mytag, String contador){
+
+        byte[] aux =  new byte[4];
+        MifareUltralight mf= MifareUltralight.get(mytag);
+        int z=0;
+        int auxPages =0;
+        try {
+            mf.connect();
+            if (contador.length() != 4) {
+                int c = 4 - contador.length();
+                while (c != 0) {
+                    contador = "0" + contador;
+                    c--;
+                }
+
+            }
+
+            byte[] value = contador.getBytes();
+
+            mf.writePage(7, value);
+            mf.close();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public static String byteArrayToHexString(byte[] byteArray){
         return String.format("%0" + (byteArray.length * 2) + "X", new BigInteger(1,byteArray));
