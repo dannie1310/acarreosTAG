@@ -63,7 +63,7 @@ public class NFCUltralight {
         return aux;
     }
 
-    public void writePagina(Tag mytag, int page, String mensaje ){
+    public boolean writePagina(Tag mytag, int page, String mensaje ){
         byte[] value =  mensaje.getBytes();
         byte[] aux =  new byte[4];
         MifareUltralight mf= MifareUltralight.get(mytag);
@@ -81,8 +81,11 @@ public class NFCUltralight {
                     auxPages+=1;
                 }
             }
+            mf.close();
+            return true;
         }catch (Exception e){
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -107,28 +110,29 @@ public class NFCUltralight {
         }
     }
 
-    public void write(Tag mytag, int page, String mensaje ){
+    public boolean write(Tag mytag, int page, String mensaje ){
         byte[] value =  mensaje.getBytes();
-        byte[] aux =null;
+        byte[] aux = new byte[4];
         MifareUltralight mf= MifareUltralight.get(mytag);
         int z=0;
         int auxPages =0;
         try{
             mf.connect();
                 for (int x = 0; x < 4; x++) {
-                    if(x < value.length ) {
-                        aux[x] = value[z];
+                    if(z < value.length ) {
+                        aux[x]=value[z];
                         z++;
                     }
                     else{
                         aux[x]=0;
                     }
-
                 }
-             mf.writePage(page, aux);
+               mf.writePage(page, aux);
             mf.close();
+            return true;
         }catch (Exception e){
             e.printStackTrace();
+            return false;
         }
     }
 
