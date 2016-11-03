@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity
                 for (String t : techs) {
                     if (MifareClassic.class.getName().equals(t)) {
                         nfc = new NFCTag(myTag, this);
-                        Toast.makeText(getApplicationContext(), "MIFARECLASSIC", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getApplicationContext(), "MIFARECLASSIC", Toast.LENGTH_SHORT).show();
                         UID = nfc.idTag(myTag);
                         tipo=1;
                     }
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity
                         nfcUltra = new NFCUltralight(myTag, this);
                         UID = byteArrayToHexString(myTag.getId());
 
-                        Toast.makeText(getApplicationContext(), "MIFAREULTRALIGHT", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "MIFAREULTRALIGHT", Toast.LENGTH_SHORT).show();
                         tipo=2;
                     }
                 }
