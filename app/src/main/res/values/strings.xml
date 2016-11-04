@@ -38,5 +38,8 @@
     <string name="def">FFFFFFFFFFFFFF078069FFFFFFFFFFFF</string>
     <string name="password">773A7DB80405</string>
     <string name="formatear">Se ha formateado con llaves privadas GHI </string>
+    <string name="title_activity_reemplazar">Reemplazar TAG</string>
+
+    <string name="action_settings">Settings</string>
 
 </resources>

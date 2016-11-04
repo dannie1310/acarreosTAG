@@ -2,6 +2,7 @@ package mx.grupohi.acarreostag;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,6 +26,8 @@ class TagModel {
 
     private static SQLiteDatabase db;
     private DBScaSqlite db_sca;
+
+    public String UID;
 
     TagModel(Context context) {
         this.context = context;
@@ -92,8 +95,9 @@ class TagModel {
         }
     }
 
-    boolean exists(String UID) {
-        db = db_sca.getWritableDatabase();
+    static boolean exists(String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM (SELECT uid FROM tags UNION SELECT uid FROM tags_disponibles) as total WHERE uid = '" + UID + "'", null);
         try{
             return c != null && c.moveToFirst();
@@ -132,24 +136,26 @@ class TagModel {
         return JSON;
     }
 
-    void update(String UID, String idcamion) {
-        this.data.clear();
-        this.data.putNull("idcamion");
+    static void update(String UID, String idcamion, Context context) {
+        ContentValues data = new ContentValues();
+        data.putNull("idcamion");
 
-        db = db_sca.getWritableDatabase();
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
 
         try{
-            db.update("tags_disponibles", this.data, "idcamion = '"  + idcamion + "'", null);
-            this.data.clear();
-            this.data.put("idcamion", idcamion);
-            db.update("tags_disponibles", this.data, "uid = '"+ UID +"'", null);
+            db.update("tags_disponibles", data, "idcamion = '"  + idcamion + "'", null);
+            data.clear();
+            data.put("idcamion", idcamion);
+            db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
         } finally {
             db.close();
         }
     }
 
-    boolean tagDisponible (String UID) {
-        db = db_sca.getWritableDatabase();
+    static boolean tagDisponible (String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "'", null);
         try{
             return c != null && c.moveToFirst();
@@ -178,6 +184,20 @@ class TagModel {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    TagModel find(String UID) {
+        db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags WHERE uid = '" + UID + "'", null);
+        try{
+            if(c != null && c.moveToFirst()) {
+                this.UID = c.getString(c.getColumnIndex("uid"));
+            }
+            return this;
         } finally {
             c.close();
             db.close();

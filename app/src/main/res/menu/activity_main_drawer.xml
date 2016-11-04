@@ -3,9 +3,18 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:title="Inicio"
+            android:id="@+id/nav_inicio"
+            android:icon="@drawable/ic_action_home"/>
+        <item
             android:id="@+id/nav_sync"
             android:title="Sincronizar"
-            android:icon="@drawable/ic_sync_black_24dp" />
+            android:icon="@drawable/ic_action_sync" />
+        <item
+            android:title="Reemplazar TAG"
+            android:id="@+id/nav_replace"
+            android:icon="@mipmap/ic_replace"/>
+
     </group>
 
     <item android:title="Sesión Actual">

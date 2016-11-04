@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity
     private HashMap<String, String> spinnerMap;
 
     private User user;
-    private TagModel tags;
     private Camion camiones;
     private AlertDialog.Builder alertDialog;
     private TextView infoCamion;
@@ -108,7 +107,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         user = new User(this);
-        tags = new TagModel(this);
 
         loginActivity = new Intent(this, LoginActivity.class);
         if(drawer != null)
@@ -119,6 +117,7 @@ public class MainActivity extends AppCompatActivity
                     View child = drawer.getChildAt(i);
                     TextView tvp = (TextView) child.findViewById(R.id.textViewProyecto);
                     TextView tvu = (TextView) child.findViewById(R.id.textViewUser);
+                    TextView tvv = (TextView) child.findViewById(R.id.textViewVersion);
 
                     if (tvp != null) {
                         tvp.setText(User.getProyecto(getApplicationContext()));
@@ -126,10 +125,12 @@ public class MainActivity extends AppCompatActivity
                     if (tvu != null) {
                         tvu.setText(user.getName());
                     }
+                    if (tvv != null) {
+                        tvv.setText("Versión " + String.valueOf(BuildConfig.VERSION_NAME));
+                    }
                 }
             }
         });
-
 
         spinner = (Spinner) findViewById(R.id.spinner);
         if(spinner != null) {
@@ -140,9 +141,6 @@ public class MainActivity extends AppCompatActivity
                     String placa = spinner.getSelectedItem().toString();
                     idCamion = spinnerMap.get(placa);
                     setInfoCamion(idCamion);
-
-                    Log.i("IDCAMION", String.valueOf(idCamion));
-                    Log.i("PLACAS",placa);
                 }
 
                 @Override
@@ -153,8 +151,8 @@ public class MainActivity extends AppCompatActivity
         }
         camiones = new Camion(this);
 
-        final ArrayList <String> placas = camiones.getArrayListPlacas();
-        final ArrayList <String> ids = camiones.getArrayListId();
+        final ArrayList <String> placas = Camion.getArrayListPlacas(getApplicationContext(), false);
+        final ArrayList <String> ids = Camion.getArrayListId(getApplicationContext(), false);
 
         String[] spinnerArray = new String[ids.size()];
         spinnerMap = new HashMap<>();
@@ -244,8 +242,8 @@ public class MainActivity extends AppCompatActivity
                     }
             */
 
-                if(tags.exists(UID)) {
-                    if (tags.tagDisponible(UID)) {
+                if(TagModel.exists(UID, getApplicationContext())) {
+                    if (TagModel.tagDisponible(UID, getApplicationContext())) {
                         contador = camiones.getNumeroViajes(Integer.valueOf(idCamion));
                         if(tipo==1) {
                             mensaje = nfc.concatenar(idCamion, User.getIdProyecto(getApplicationContext()));
@@ -269,7 +267,7 @@ public class MainActivity extends AppCompatActivity
                             //boolean m = nfcUltra.formateo(myTag);
 
                         }
-                        tags.update(UID, idCamion);
+                        TagModel.update(UID, idCamion, getApplicationContext());
 
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
@@ -361,7 +359,13 @@ public class MainActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_sync) {
             nextActivity();
-
+        } else if (id == R.id.nav_replace) {
+            Intent intent = new Intent(MainActivity.this,  ReemplazarActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_inicio) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -2,6 +2,7 @@ package mx.grupohi.acarreostag;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.util.Log;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Queue;
 
 /**
  * Creado por JFEsquivel el 28/09/2016.
@@ -19,13 +21,24 @@ class Camion {
     private SQLiteDatabase db;
     private Context context;
     private ContentValues data;
+    public TagModel tag;
 
     private DBScaSqlite db_sca;
 
-     Camion(Context context) {
+    public Integer idCamion;
+    public String placas;
+    public String marca;
+    public String modelo;
+    public Double ancho;
+    public Double largo;
+    public Double alto;
+    public String economico;
+
+    Camion(Context context) {
         this.context = context;
         data = new ContentValues();
         db_sca = new DBScaSqlite(this.context, "sca", null, 1);
+        this.tag = new TagModel(context);
     }
 
     static Cursor get(String idCamion, Context context) {
@@ -33,6 +46,7 @@ class Camion {
         SQLiteDatabase db = db_sca.getWritableDatabase();
         return db.rawQuery("SELECT * FROM camiones WHERE idcamion = '" + idCamion + "'", null);
     }
+
     boolean create(JSONObject data) throws Exception {
 
         this.data.put("idCamion", data.getString("idcamion"));
@@ -62,10 +76,17 @@ class Camion {
         }
     }
 
-    ArrayList<String> getArrayListPlacas() {
+    static ArrayList<String> getArrayListPlacas(Context context, Boolean sync) {
         ArrayList<String> data = new ArrayList<>();
-        db = db_sca.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC", null);
+        String query;
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        if (sync) {
+            query =  "SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NOT NULL ORDER BY economico ASC";
+        } else {
+            query = "SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC";
+        }
+        Cursor c = db.rawQuery(query, null);
         if (c != null && c.moveToFirst())
             try {
                 data.add("-- Seleccione --");
@@ -80,10 +101,18 @@ class Camion {
         return data;
     }
 
-    ArrayList<String> getArrayListId() {
+    static ArrayList<String> getArrayListId(Context context, Boolean sync) {
         ArrayList<String> data = new ArrayList<>();
-        db = db_sca.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC", null);
+        String query;
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        if (sync) {
+            query = "SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NOT NULL ORDER BY economico ASC";
+        } else {
+            query = "SELECT camiones.* FROM camiones LEFT JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE tags.idcamion IS NULL ORDER BY economico ASC";
+        }
+
+        Cursor c = db.rawQuery(query, null);
         try {
             if (c != null && c.moveToFirst()) {
                 data.add("0");
@@ -110,6 +139,32 @@ class Camion {
                 return null;
             }
         } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    public Camion find(Integer idCamion) {
+        db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT camiones.*,  tags.uid FROM camiones JOIN tags ON (camiones.idcamion = tags.idcamion) WHERE camiones.idcamion = '" + idCamion + "'", null);
+        try {
+            if(c != null && c.moveToFirst()) {
+                this.idCamion   = c.getInt(c.getColumnIndex("idcamion"));
+                this.placas     = c.getString(c.getColumnIndex("placas"));
+                this.marca      = c.getString(c.getColumnIndex("marca"));
+                this.modelo     = c.getString(c.getColumnIndex("modelo"));
+                this.ancho      = c.getDouble(c.getColumnIndex("ancho"));
+                this.largo      = c.getDouble(c.getColumnIndex("largo"));
+                this.alto       = c.getDouble(c.getColumnIndex("alto"));
+                this.economico  = c.getString(c.getColumnIndex("economico"));
+                this.tag        = tag.find(c.getString(c.getColumnIndex("uid")));
+
+                return this;
+            } else {
+                return null;
+            }
+        } finally {
+            assert c != null;
             c.close();
             db.close();
         }
