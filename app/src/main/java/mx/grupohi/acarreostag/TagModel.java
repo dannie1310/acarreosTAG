@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.Contacts;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -76,18 +77,19 @@ class TagModel {
         SQLiteDatabase db = db_sca.getWritableDatabase();
         Cursor c = db.rawQuery("SELECT idcamion FROM tags_disponibles", null);
         try{
-            if (c != null && c.moveToFirst()) {
+            if (c != null) {
                 while (c.moveToNext()) {
+
                     if (c.getString(c.getColumnIndex("idcamion")) != null) {
                         result = false;
                     }
                 }
             }
+            return result;
         } finally {
             c.close();
             db.close();
         }
-        return result;
     }
 
     boolean exists(String UID) {
