@@ -206,6 +206,8 @@ public class MainActivity extends AppCompatActivity
         int contador=0;
         int tipo=0;
         String UID="";
+        Boolean result = true;
+
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 Tag myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -213,7 +215,6 @@ public class MainActivity extends AppCompatActivity
                 for (String t : techs) {
                     if (MifareClassic.class.getName().equals(t)) {
                         nfc = new NFCTag(myTag, this);
-                       // Toast.makeText(getApplicationContext(), "MIFARECLASSIC", Toast.LENGTH_SHORT).show();
                         UID = nfc.idTag(myTag);
                         tipo=1;
                     }
@@ -251,7 +252,14 @@ public class MainActivity extends AppCompatActivity
                             nfc.clean(myTag, 1);
                             if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
                                 nfc.changeKey(myTag);
-                                Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                                System.out.println(idCamion);
+                                System.out.println(Util.getIdCamion(nfc.readSector(myTag, 0,1)));
+                                System.out.println(contador);
+                                System.out.println(Integer.valueOf(nfc.readSector(myTag, 2, 8)));
+
+                                if (Integer.valueOf(idCamion) != Util.getIdCamion(nfc.readSector(myTag, 0,1)) && contador != Integer.valueOf(nfc.readSector(myTag, 2, 8))){
+                                    result = false;
+                                }
                             } else {
                                 Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                             }
@@ -259,15 +267,27 @@ public class MainActivity extends AppCompatActivity
                         if(tipo==2){
                             nfcUltra.formateo(myTag);
                             mensaje = nfcUltra.concatenar(idCamion, User.getIdProyecto(this));
+
                             if(nfcUltra.writePagina(myTag,4, mensaje) && nfcUltra.writeViaje(myTag,String.valueOf(contador))){
-                                Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                                System.out.println(Integer.valueOf(idCamion));
+                                System.out.println(Integer.valueOf(nfcUltra.readPage(myTag,4)));
+                                System.out.println(contador);
+                                System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 7)));
+                                if(Integer.valueOf(idCamion) != Integer.valueOf(nfcUltra.readPage(myTag,4)) && contador != Integer.valueOf(nfcUltra.readPage(myTag, 7))){
+                                    result = false;
+                                }
                             } else {
                                 Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                             }
-                            //boolean m = nfcUltra.formateo(myTag);
+                        }
+                        if(result){
+                            Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                            TagModel.update(UID, idCamion, getApplicationContext(), false);
+                        }else{
+                            Toast.makeText(MainActivity.this, "No se pudo configurar el TAG, por favor intentelo de nuevo.", Toast.LENGTH_LONG).show();
 
                         }
-                        TagModel.update(UID, idCamion, getApplicationContext(), false);
+
 
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();

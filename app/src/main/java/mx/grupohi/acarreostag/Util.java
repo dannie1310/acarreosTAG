@@ -97,4 +97,18 @@ public class Util {
         }
         return  new JSONObject(response);
     }
+
+    static Integer getIdCamion(String string) {
+
+        try {
+            Integer result = Integer.valueOf(string.substring(0,4));
+            if (result != null) {
+                return result;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

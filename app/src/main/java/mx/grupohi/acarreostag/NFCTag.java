@@ -193,7 +193,7 @@ public class NFCTag {
                     for (int i = 0; i < toRead.length; i++) {
                         if (toRead[i] != 0) {
                             limpio[i] += toRead[i];
-                        } else {
+                        }else{
                             limpio[i] += ' ';
                         }
                     }
@@ -206,7 +206,7 @@ public class NFCTag {
             e.printStackTrace();
             return context.getString(R.string.error_conexion_tag);
         }
-        return  aux;
+        return  aux.replace(" ", "");
     }
 
     void clean(Tag tag,int sector){

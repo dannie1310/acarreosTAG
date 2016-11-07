@@ -1,6 +1,8 @@
 package mx.grupohi.acarreostag;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
@@ -162,6 +164,33 @@ public class NFCUltralight {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public String readPage(Tag nfc, int page){
+        MifareUltralight mf=MifareUltralight.get(nfc);
+        byte[] toRead = null;
+        byte[] auxRead =  new byte[4];
+        String aux="";
+        try{
+            mf.connect();
+            toRead = mf.readPages(page);
+            for(int i=0; i<4; i++) {
+                auxRead[i] = toRead[i];
+            }
+            String x = byteArrayToHexString(auxRead);
+            if(x.equalsIgnoreCase("00000000")){
+                aux=null;
+            }
+            else {
+                String s = new String(auxRead);
+                aux += s;
+                toRead = null;
+            }
+            mf.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return aux;
     }
 
     public static String byteArrayToHexString(byte[] byteArray){
