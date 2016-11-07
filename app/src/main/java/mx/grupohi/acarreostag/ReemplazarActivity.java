@@ -164,14 +164,32 @@ public class ReemplazarActivity extends AppCompatActivity
                 if(idCamion == "0") {
                     Toast.makeText(ReemplazarActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
-                    checkNfcEnabled();
-                    WriteModeOn();
-                }
+                    new android.app.AlertDialog.Builder(ReemplazarActivity.this)
+                            .setTitle("INFORMACIÓN")
+                            .setMessage("Una vez reemplazado el TAG del camión " + camion.economico + " se cambiara la configuración actual.\n ¡No olvide sincronizar los cambios para que el reemplazo tenga efecto!")
+                            .setCancelable(true)
+                            .setPositiveButton("Reemplazar TAG",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            checkNfcEnabled();
+                                            WriteModeOn();
+                                        }
+                                    })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create()
+                            .show();
+                    }
             }
         });
 
         new android.app.AlertDialog.Builder(ReemplazarActivity.this)
-                .setMessage("En ésta sección puede modificar el TAG de los camiones sincronizados")
+                .setMessage("En ésta sección puede reemplazar el TAG de los camiones previamente configurados y sincronizados")
                 .setNeutralButton("ENTENDIDO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -235,6 +253,8 @@ public class ReemplazarActivity extends AppCompatActivity
         } else if (id == R.id.nav_inicio) {
             Intent mainActivity = new Intent(this, MainActivity.class);
             startActivity(mainActivity);
+        } else if (id == R.id.nav_replace) {
+            startActivity(getIntent());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -359,7 +379,10 @@ public class ReemplazarActivity extends AppCompatActivity
                                 Toast.makeText(ReemplazarActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                             }
                         }
-                        TagModel.update(UID, idCamion, getApplicationContext());
+                        TagModel.update(UID, idCamion, getApplicationContext(), true);
+
+                        Intent mainActivity = new Intent(ReemplazarActivity.this, MainActivity.class);
+                        startActivity(mainActivity);
 
                     } else {
                         Toast.makeText(ReemplazarActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();

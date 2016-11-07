@@ -136,20 +136,31 @@ class TagModel {
         return JSON;
     }
 
-    static void update(String UID, String idcamion, Context context) {
+    static void update(String UID, String idcamion, Context context, Boolean sync) {
         ContentValues data = new ContentValues();
-        data.putNull("idcamion");
 
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
         SQLiteDatabase db = db_sca.getWritableDatabase();
 
-        try{
-            db.update("tags_disponibles", data, "idcamion = '"  + idcamion + "'", null);
-            data.clear();
-            data.put("idcamion", idcamion);
-            db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
-        } finally {
-            db.close();
+        if(!sync) {
+            data.putNull("idcamion");
+            try{
+                db.update("tags_disponibles", data, "idcamion = '"  + idcamion + "'", null);
+                data.clear();
+                data.put("idcamion", idcamion);
+                db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
+            } finally {
+                db.close();
+            }
+        } else {
+            try{
+                db.execSQL("DELETE FROM tags WHERE idcamion = '" + idcamion + "'");
+                data.clear();
+                data.put("idcamion", idcamion);
+                db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
+            } finally {
+                db.close();
+            }
         }
     }
 

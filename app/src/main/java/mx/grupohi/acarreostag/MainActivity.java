@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity
                             //boolean m = nfcUltra.formateo(myTag);
 
                         }
-                        TagModel.update(UID, idCamion, getApplicationContext());
+                        TagModel.update(UID, idCamion, getApplicationContext(), false);
 
                     } else {
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
