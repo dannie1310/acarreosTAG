@@ -149,6 +149,7 @@ class TagModel {
                 data.clear();
                 data.put("idcamion", idcamion);
                 db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
+                System.out.println("1: "+ idcamion + "tag: "+ UID);
             } finally {
                 db.close();
             }
@@ -158,6 +159,7 @@ class TagModel {
                 data.clear();
                 data.put("idcamion", idcamion);
                 db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
+                System.out.println("2:delete from tags "+ idcamion + "tag: update "+ UID);
             } finally {
                 db.close();
             }
@@ -209,6 +211,23 @@ class TagModel {
                 this.UID = c.getString(c.getColumnIndex("uid"));
             }
             return this;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    static String findCamion (String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT tags.uid, tags.idcamion, camiones.economico, camiones.placas FROM tags INNER JOIN camiones ON camiones.idcamion = tags.idcamion  WHERE tags.uid = '" + UID + "'", null);//CHECAR
+
+        String resp = null;
+        try{
+            if(c != null && c.moveToFirst()) {
+                resp = " "+c.getString(2) +"["+c.getString(3)+"]";
+            }
+            return resp;
         } finally {
             c.close();
             db.close();
