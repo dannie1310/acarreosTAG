@@ -101,7 +101,8 @@ public class Util {
     static Integer getIdCamion(String string) {
 
         try {
-            Integer result = Integer.valueOf(string.substring(0,4));
+            String cadena= string.substring(0,4);
+            Integer result = Integer.valueOf(cadena);
             if (result != null) {
                 return result;
             } else {

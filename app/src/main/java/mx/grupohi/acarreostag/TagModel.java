@@ -167,16 +167,13 @@ class TagModel {
                 data.clear();
                 data.put("idcamion", idcamion);
                 data.put("estatus", "1");
-                System.out.println("TAG: "+ UID + " : "+ data);
+
                 db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
-                System.out.println("2:delete from tags "+  db.update("tags_disponibles", data, "uid = '"+ UID +"'", null));
                 resp = true;
             } finally {
                 db.close();
             }
         }
-        System.out.println("BOOLEAN: "+resp);
-
         return resp;
     }
 
@@ -253,7 +250,6 @@ class TagModel {
             if(c != null && c.moveToFirst()) {
                 resp = " "+c.getString(2) +"["+c.getString(3)+"]";
             }
-            System.out.println("RESP: "+ resp + " : "+UID);
             return resp;
         } finally {
             c.close();

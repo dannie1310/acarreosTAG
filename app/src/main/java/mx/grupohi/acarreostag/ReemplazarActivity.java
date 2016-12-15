@@ -336,7 +336,7 @@ public class ReemplazarActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(final Intent intent) {
         String mensaje;
-        int contador = 0;
+        Integer contador = 0;
         int tipo = 0;
         String UID = "";
         Boolean result = false;
@@ -368,12 +368,10 @@ public class ReemplazarActivity extends AppCompatActivity
                             if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
                                 boolean cambio = nfc.changeKey(myTag);
                                 if (cambio == true) {
-                                    System.out.println(idCamion);
-                                    System.out.println(Util.getIdCamion(nfc.readSector(myTag, 0, 1)));
-                                    System.out.println(contador);
-                                    System.out.println(Integer.valueOf(nfc.readSector(myTag, 2, 8)));
+                                    Integer idcamionTAG = Util.getIdCamion(nfc.readSector(myTag, 0, 1));
+                                    Integer contadorTAG = Integer.valueOf(nfc.readSector(myTag, 2, 8));
 
-                                    if (Integer.valueOf(idCamion) == Util.getIdCamion(nfc.readSector(myTag, 0, 1)) && contador == Integer.valueOf(nfc.readSector(myTag, 2, 8))) {
+                                    if ((Integer.valueOf(idCamion).equals(Integer.valueOf(idcamionTAG))) && (Integer.valueOf(contador).equals(Integer.valueOf(contadorTAG)))) {
                                         result = true;
                                     } else {
                                         result = false;
@@ -393,7 +391,7 @@ public class ReemplazarActivity extends AppCompatActivity
                                 System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 4)));
                                 System.out.println(contador);
                                 System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 7)));
-                                if (Integer.valueOf(idCamion) == Integer.valueOf(nfcUltra.readPage(myTag, 4)) && contador == Integer.valueOf(nfcUltra.readPage(myTag, 7))) {
+                                if ((Integer.valueOf(idCamion).equals(Integer.valueOf(nfcUltra.readPage(myTag, 4)))) && (contador.equals(Integer.valueOf(nfcUltra.readPage(myTag, 7))))) {
                                     result = true;
                                 } else {
                                     result = false; // checar si es este el problema
