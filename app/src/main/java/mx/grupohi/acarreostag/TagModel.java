@@ -65,7 +65,8 @@ class TagModel {
         this.data.put("uid", data.getString("uid"));
         this.data.put("idtag", data.getString("id"));
         this.data.put("idcamion", data.getString("idcamion") != "null" ? data.getString("idcamion") : null);
-
+        this.data.put("estatus",0);
+        System.out.println("estatus: "+this.data);
         db = db_sca.getWritableDatabase();
         try{
             return db.insert("tags_disponibles", null, this.data) > -1;
@@ -136,7 +137,8 @@ class TagModel {
         return JSON;
     }
 
-    static void update(String UID, String idcamion, Context context, Boolean sync) {
+    static boolean update(String UID, String idcamion, Context context, Boolean sync) {
+        boolean resp=false;
         ContentValues data = new ContentValues();
 
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
@@ -145,11 +147,17 @@ class TagModel {
         if(!sync) {
             data.putNull("idcamion");
             try{
-                db.update("tags_disponibles", data, "idcamion = '"  + idcamion + "'", null);
-                data.clear();
-                data.put("idcamion", idcamion);
-                db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
-                System.out.println("1: "+ idcamion + "tag: "+ UID);
+                System.out.println("DISPONIBLE: "+camionDisponible(idcamion,context));
+                if(!camionDisponible(idcamion,context)) {
+                    db.update("tags_disponibles", data, "idcamion = '" + idcamion + "'", null);
+                    data.clear();
+                    data.put("idcamion", idcamion);
+                    db.update("tags_disponibles", data, "uid = '" + UID + "'", null);
+                    System.out.println("1: " + idcamion + "tag: " + UID);
+                    resp = true;
+                }else{
+                    resp = false;
+                }
             } finally {
                 db.close();
             }
@@ -158,18 +166,36 @@ class TagModel {
                 db.execSQL("DELETE FROM tags WHERE idcamion = '" + idcamion + "'");
                 data.clear();
                 data.put("idcamion", idcamion);
+                data.put("estatus", "1");
+                System.out.println("TAG: "+ UID + " : "+ data);
                 db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
-                System.out.println("2:delete from tags "+ idcamion + "tag: update "+ UID);
+                System.out.println("2:delete from tags "+  db.update("tags_disponibles", data, "uid = '"+ UID +"'", null));
+                resp = true;
             } finally {
                 db.close();
             }
         }
+        System.out.println("BOOLEAN: "+resp);
+
+        return resp;
     }
 
     static boolean tagDisponible (String UID, Context context) {
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
         SQLiteDatabase db = db_sca.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "'", null);
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "' and estatus = 0", null);
+        try{
+            return c != null && c.moveToFirst();
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    static boolean camionDisponible (String idcamion, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE idcamion = '" + idcamion + "' and estatus = 1", null);
         try{
             return c != null && c.moveToFirst();
         } finally {
@@ -227,6 +253,24 @@ class TagModel {
             if(c != null && c.moveToFirst()) {
                 resp = " "+c.getString(2) +"["+c.getString(3)+"]";
             }
+            System.out.println("RESP: "+ resp + " : "+UID);
+            return resp;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+    static String findDisponibleCamion (String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT tags_disponibles.uid, tags_disponibles.idcamion, camiones.economico, camiones.placas FROM tags_disponibles INNER JOIN camiones ON camiones.idcamion = tags_disponibles.idcamion  WHERE tags_disponibles.uid = '" + UID + "' and estatus = 1", null);//CHECAR
+
+        String resp = null;
+        try{
+            if(c != null && c.moveToFirst()) {
+                resp = " "+c.getString(2) +"["+c.getString(3)+"]";
+            }
+            System.out.println("RESP: "+ resp + " : "+UID);
             return resp;
         } finally {
             c.close();

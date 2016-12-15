@@ -414,6 +414,9 @@ public class ReemplazarActivity extends AppCompatActivity
                         }
                     }else {
                         String camion = TagModel.findCamion(UID, getApplicationContext());
+                        if(camion==null){
+                            camion = TagModel.findDisponibleCamion(UID,getApplicationContext());
+                        }
                         Toast.makeText(ReemplazarActivity.this, getString(R.string.error_tag_configurado)+camion, Toast.LENGTH_SHORT).show();
                     }
                 } else {

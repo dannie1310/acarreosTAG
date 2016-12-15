@@ -30,6 +30,7 @@
     <string name="text_turn_on_nfc">La aplicación no funciona si el adaptador NFC está apagado. Por favor encienda el adaptador NFC en la configuración del dispositivo.</string>
     <string name="text_update_settings">Encender Ahora</string>
     <string name="tag_configurado">TAG configurado correctamente</string>
+    <string name="error_camion_configurado">Camión ha sido configurado. Favor de sincronizar. </string>
     <string name="tag_remplazo">Se Reemplazo el TAG correctamente</string>
     <string name="title_activity_sync">SINCRONIZAR DATOS</string>
     <string name="mnetodo_sync">capturaConfiguracion</string>

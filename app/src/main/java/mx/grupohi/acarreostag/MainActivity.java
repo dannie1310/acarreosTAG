@@ -293,8 +293,13 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
                         if(result){
-                            Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
-                            TagModel.update(UID, idCamion, getApplicationContext(), false);
+
+                            boolean resp = TagModel.update(UID, idCamion, getApplicationContext(), false);
+                            if(resp){
+                                Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(MainActivity.this, getString(R.string.error_camion_configurado), Toast.LENGTH_LONG).show();
+                            }
                         }else{
                             Toast.makeText(MainActivity.this, "No se pudo configurar el TAG, por favor intentelo de nuevo.", Toast.LENGTH_LONG).show();
 
@@ -303,6 +308,9 @@ public class MainActivity extends AppCompatActivity
 
                     } else {
                         String camion = TagModel.findCamion(UID, getApplicationContext());
+                        if(camion==null){
+                            camion = TagModel.findDisponibleCamion(UID,getApplicationContext());
+                        }
                         Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado)+camion, Toast.LENGTH_SHORT).show();
                     }
                 } else {
