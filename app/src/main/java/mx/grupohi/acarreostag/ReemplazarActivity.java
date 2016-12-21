@@ -250,7 +250,10 @@ public class ReemplazarActivity extends AppCompatActivity
         } else if (id == R.id.nav_sync) {
             Intent syncActivity = new Intent(ReemplazarActivity.this, SyncActivity.class);
             startActivity(syncActivity);
-        } else if (id == R.id.nav_inicio) {
+        } else if (id == R.id.nav_desc) {
+            Intent descarga = new Intent(this, DescargaActivity.class);
+            startActivity(descarga);
+        }  else if (id == R.id.nav_inicio) {
             Intent mainActivity = new Intent(this, MainActivity.class);
             startActivity(mainActivity);
         } else if (id == R.id.nav_replace) {

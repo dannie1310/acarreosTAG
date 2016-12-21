@@ -35,12 +35,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SyncActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ReemplazarActivity"
             android:label="@string/title_activity_reemplazar"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DescargaActivity"
+            android:label="@string/title_activity_descarga"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

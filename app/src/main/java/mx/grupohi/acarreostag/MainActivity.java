@@ -398,6 +398,10 @@ public class MainActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_sync) {
             nextActivity();
+        } else if (id == R.id.nav_desc) {
+            Intent descarga = new Intent(this, DescargaActivity.class);
+            startActivity(descarga);
+
         } else if (id == R.id.nav_replace) {
             Intent intent = new Intent(MainActivity.this,  ReemplazarActivity.class);
             startActivity(intent);
