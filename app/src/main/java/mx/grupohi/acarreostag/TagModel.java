@@ -50,6 +50,16 @@ class TagModel {
         }
     }
 
+    boolean descargarTags(ContentValues data) throws Exception {
+        db = db_sca.getWritableDatabase();
+        boolean r=false;
+        try{
+            return db.insert("tags", null, data) > -1;
+        } finally {
+            db.close();
+        }
+    }
+
     void deleteAll() {
         db = db_sca.getWritableDatabase();
         try {
@@ -70,6 +80,15 @@ class TagModel {
         db = db_sca.getWritableDatabase();
         try{
             return db.insert("tags_disponibles", null, this.data) > -1;
+        } finally {
+            db.close();
+        }
+    }
+    Boolean descargarTagsDisponibles(ContentValues data) throws Exception {
+        db = db_sca.getWritableDatabase();
+        boolean r=false;
+        try{
+            return db.insert("tags_disponibles", null, data) > -1;
         } finally {
             db.close();
         }
@@ -268,6 +287,75 @@ class TagModel {
             }
             System.out.println("RESP: "+ resp + " : "+UID);
             return resp;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    static Integer findTag(String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "'", null);
+        Integer resp = 0;
+        try{
+            if(c != null && c.moveToFirst()) {
+                if (c.getString((c.getColumnIndex("idcamion")))==null) {
+                    System.out.println("falso, null"+2);
+                    resp = 2;
+                }else {
+                    System.out.println("falso, null 1");
+                    resp = 1;
+
+                }
+            }
+            else{
+                System.out.println("no existe, null"+resp);
+            }
+
+            return resp;
+        } finally {
+            c.close();
+            db.close();
+
+        }
+    }
+
+    static boolean tagExiste (String UID,String idcamion, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags WHERE uid = '" + UID + "'", null);
+        try{
+            System.out.println("E");
+            if( c != null && c.moveToFirst()){
+                System.out.println("Se encuentra en tags");
+                return true;
+            }else {
+                if(tagRemplazoExiste(idcamion,context)){
+                    System.out.println("existe remplazo");
+                    return true;
+                }else{
+                    System.out.println("NO existe remplazo");
+                    return false;
+                }
+            }
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+    static boolean tagRemplazoExiste (String idCamion, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE idCamion = '" + idCamion + "' and estatus = '1'", null);
+        try{
+            System.out.println("ER: ");
+            if(c != null && c.moveToFirst()){
+                return true;
+            }else{
+                return false;
+            }
+
         } finally {
             c.close();
             db.close();

@@ -51,7 +51,7 @@ public class DescargaActivity extends AppCompatActivity {
 
     public void deleteAllTables() {
         camion.deleteAll();
-        tag.deleteAll();
+       // tag.deleteAll();
     }
 
     public class DescargaCatalogos extends AsyncTask<Void, Void, Boolean> {
@@ -109,6 +109,7 @@ public class DescargaActivity extends AppCompatActivity {
                     }
 
                     try {
+                        TagModel e = new TagModel(context);
                         final JSONArray tags = new JSONArray(JSON.getString("tags"));
                         for (int i = 0; i < tags.length(); i++) {
                             final int finalI = i + 1;
@@ -118,14 +119,25 @@ public class DescargaActivity extends AppCompatActivity {
                                     progressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
                                 }
                             });
-                            //System.out.println("Tags: " + tags.getJSONObject(i));
-                            tag.registrarTags(tags.getJSONObject(i));
+                            System.out.println("Tags: "+tags.getJSONObject(i));
+                            JSONObject t=tags.getJSONObject(i);
+                            data.clear();
+                            if(!TagModel.tagExiste(t.getString("uid"),t.getString("idcamion"), getApplicationContext())){
+                                data.put("uid", t.getString("uid"));
+                                data.put("idcamion", t.getString("idcamion"));
+                                data.put("idproyecto", t.getString("idproyecto"));
+                                if(!e.descargarTags(data)){
+                                    return false;
+                                }
+                            }
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                     try {
+                        TagModel tags = new TagModel(context);
                         final JSONArray tags_disponibles = new JSONArray(JSON.getString("tags_disponibles_configurar"));
                         for (int i = 0; i < tags_disponibles.length(); i++) {
                             final int finalI = i + 1;
@@ -135,8 +147,24 @@ public class DescargaActivity extends AppCompatActivity {
                                     progressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
                                 }
                             });
-                            //System.out.println("TagsDisponibles: " + tags_disponibles.getJSONObject(i));
-                            tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
+
+                            JSONObject tag_nuevos=tags_disponibles.getJSONObject(i);
+                            data.clear();
+                            Integer r=TagModel.findTag(tag_nuevos.getString("uid"),getApplicationContext());
+                            System.out.println("Lugar: "+r);
+                            if(r == 0) {
+                                System.out.println("TagsDisponibles: " + tags_disponibles.getJSONObject(i));
+                                data.put("uid", tag_nuevos.getString("uid"));
+                                data.put("idtag", tag_nuevos.getString("id"));
+                                data.put("idcamion", tag_nuevos.getString("idcamion") != "null" ? tag_nuevos.getString("idcamion") : null);
+                                data.put("estatus", 0);
+                                System.out.println("estatus: " + data);
+
+                                if(!tags.descargarTagsDisponibles(data)){
+                                    return false;
+                                }
+                            }
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
