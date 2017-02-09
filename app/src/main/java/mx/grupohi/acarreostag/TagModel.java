@@ -50,6 +50,16 @@ class TagModel {
         }
     }
 
+    boolean descargarTags(ContentValues data) throws Exception {
+        db = db_sca.getWritableDatabase();
+        boolean r=false;
+        try{
+            return db.insert("tags", null, data) > -1;
+        } finally {
+            db.close();
+        }
+    }
+
     void deleteAll() {
         db = db_sca.getWritableDatabase();
         try {
@@ -65,10 +75,20 @@ class TagModel {
         this.data.put("uid", data.getString("uid"));
         this.data.put("idtag", data.getString("id"));
         this.data.put("idcamion", data.getString("idcamion") != "null" ? data.getString("idcamion") : null);
-
+        this.data.put("estatus",0);
+        System.out.println("estatus: "+this.data);
         db = db_sca.getWritableDatabase();
         try{
             return db.insert("tags_disponibles", null, this.data) > -1;
+        } finally {
+            db.close();
+        }
+    }
+    Boolean descargarTagsDisponibles(ContentValues data) throws Exception {
+        db = db_sca.getWritableDatabase();
+        boolean r=false;
+        try{
+            return db.insert("tags_disponibles", null, data) > -1;
         } finally {
             db.close();
         }
@@ -136,7 +156,8 @@ class TagModel {
         return JSON;
     }
 
-    static void update(String UID, String idcamion, Context context, Boolean sync) {
+    static boolean update(String UID, String idcamion, Context context, Boolean sync) {
+        boolean resp=false;
         ContentValues data = new ContentValues();
 
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
@@ -145,10 +166,17 @@ class TagModel {
         if(!sync) {
             data.putNull("idcamion");
             try{
-                db.update("tags_disponibles", data, "idcamion = '"  + idcamion + "'", null);
-                data.clear();
-                data.put("idcamion", idcamion);
-                db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
+                System.out.println("DISPONIBLE: "+camionDisponible(idcamion,context));
+                if(!camionDisponible(idcamion,context)) {
+                    db.update("tags_disponibles", data, "idcamion = '" + idcamion + "'", null);
+                    data.clear();
+                    data.put("idcamion", idcamion);
+                    db.update("tags_disponibles", data, "uid = '" + UID + "'", null);
+                    System.out.println("1: " + idcamion + "tag: " + UID);
+                    resp = true;
+                }else{
+                    resp = false;
+                }
             } finally {
                 db.close();
             }
@@ -157,17 +185,33 @@ class TagModel {
                 db.execSQL("DELETE FROM tags WHERE idcamion = '" + idcamion + "'");
                 data.clear();
                 data.put("idcamion", idcamion);
+                data.put("estatus", "1");
+
                 db.update("tags_disponibles", data, "uid = '"+ UID +"'", null);
+                resp = true;
             } finally {
                 db.close();
             }
         }
+        return resp;
     }
 
     static boolean tagDisponible (String UID, Context context) {
         DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
         SQLiteDatabase db = db_sca.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "'", null);
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "' and estatus = 0", null);
+        try{
+            return c != null && c.moveToFirst();
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    static boolean camionDisponible (String idcamion, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE idcamion = '" + idcamion + "' and estatus = 1", null);
         try{
             return c != null && c.moveToFirst();
         } finally {
@@ -209,6 +253,109 @@ class TagModel {
                 this.UID = c.getString(c.getColumnIndex("uid"));
             }
             return this;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    static String findCamion (String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT tags.uid, tags.idcamion, camiones.economico, camiones.placas FROM tags INNER JOIN camiones ON camiones.idcamion = tags.idcamion  WHERE tags.uid = '" + UID + "'", null);//CHECAR
+
+        String resp = null;
+        try{
+            if(c != null && c.moveToFirst()) {
+                resp = " "+c.getString(2) +"["+c.getString(3)+"]";
+            }
+            return resp;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+    static String findDisponibleCamion (String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT tags_disponibles.uid, tags_disponibles.idcamion, camiones.economico, camiones.placas FROM tags_disponibles INNER JOIN camiones ON camiones.idcamion = tags_disponibles.idcamion  WHERE tags_disponibles.uid = '" + UID + "' and estatus = 1", null);//CHECAR
+
+        String resp = null;
+        try{
+            if(c != null && c.moveToFirst()) {
+                resp = " "+c.getString(2) +"["+c.getString(3)+"]";
+            }
+            System.out.println("RESP: "+ resp + " : "+UID);
+            return resp;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    static Integer findTag(String UID, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE uid = '" + UID + "'", null);
+        Integer resp = 0;
+        try{
+            if(c != null && c.moveToFirst()) {
+                if (c.getString((c.getColumnIndex("idcamion")))==null) {
+                    System.out.println("falso, null"+2);
+                    resp = 2;
+                }else {
+                    System.out.println("falso, null 1");
+                    resp = 1;
+
+                }
+            }
+            else{
+                System.out.println("no existe, null"+resp);
+            }
+
+            return resp;
+        } finally {
+            c.close();
+            db.close();
+
+        }
+    }
+
+    static boolean tagExiste (String UID,String idcamion, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags WHERE uid = '" + UID + "'", null);
+        try{
+            System.out.println("E");
+            if( c != null && c.moveToFirst()){
+                System.out.println("Se encuentra en tags");
+                return true;
+            }else {
+                if(tagRemplazoExiste(idcamion,context)){
+                    System.out.println("existe remplazo");
+                    return true;
+                }else{
+                    System.out.println("NO existe remplazo");
+                    return false;
+                }
+            }
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+    static boolean tagRemplazoExiste (String idCamion, Context context) {
+        DBScaSqlite db_sca = new DBScaSqlite(context, "sca", null, 1);
+        SQLiteDatabase db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM tags_disponibles WHERE idCamion = '" + idCamion + "' and estatus = '1'", null);
+        try{
+            System.out.println("ER: ");
+            if(c != null && c.moveToFirst()){
+                return true;
+            }else{
+                return false;
+            }
+
         } finally {
             c.close();
             db.close();

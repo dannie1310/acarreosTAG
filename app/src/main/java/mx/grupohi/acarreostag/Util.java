@@ -11,6 +11,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -101,7 +105,8 @@ public class Util {
     static Integer getIdCamion(String string) {
 
         try {
-            Integer result = Integer.valueOf(string.substring(0,4));
+            String cadena= string.substring(0,4);
+            Integer result = Integer.valueOf(cadena);
             if (result != null) {
                 return result;
             } else {

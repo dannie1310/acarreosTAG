@@ -270,6 +270,7 @@ public class LoginActivity extends AppCompatActivity  {
                                     mProgressDialog.setMessage("Actualizando catálogo de Tags... \n Tag " + finalI + " de " + tags.length());
                                 }
                             });
+                            System.out.println("Tags: "+tags.getJSONObject(i));
                             tag.registrarTags(tags.getJSONObject(i));
                         }
                     } catch (Exception e) {
@@ -286,6 +287,7 @@ public class LoginActivity extends AppCompatActivity  {
                                     mProgressDialog.setMessage("Actualizando catálogo de Tags Configurables... \n Tag " + finalI + " de " + tags_disponibles.length());
                                 }
                             });
+                            System.out.println("TagsDisponibles: "+tags_disponibles.getJSONObject(i));
                             tag.registrarTagsDisponibles(tags_disponibles.getJSONObject(i));
                         }
                     } catch (Exception e) {

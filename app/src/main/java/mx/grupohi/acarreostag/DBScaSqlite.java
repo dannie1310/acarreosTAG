@@ -16,7 +16,7 @@ public class DBScaSqlite extends SQLiteOpenHelper {
             "CREATE TABLE user (idusuario INTEGER PRIMARY KEY, nombre TEXT, usr TEXT, pass TEXT, idproyecto INTEGER, base_datos TEXT, descripcion_database TEXT)",
             "CREATE TABLE camiones (idcamion INTEGER PRIMARY KEY, placas TEXT, marca TEXT, modelo TEXT, ancho REAL, largo REAL, alto REAL, economico TEXT, numero_viajes INTEGER)",
             "CREATE TABLE tags (uid TEXT PRIMARY KEY, idcamion INTEGER, idproyecto INTEGER)",
-            "CREATE TABLE tags_disponibles (uid TEXT PRIMARY KEY, idcamion INTEGER, idtag INTEGER)"
+            "CREATE TABLE tags_disponibles (uid TEXT PRIMARY KEY, idcamion INTEGER, idtag INTEGER, estatus INTEGER)"
     };
 
     public DBScaSqlite(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

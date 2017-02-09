@@ -209,7 +209,7 @@ public class NFCTag {
         return  aux.replace(" ", "");
     }
 
-    void clean(Tag tag,int sector){
+    boolean clean(Tag tag,int sector){
         MifareClassic mfc = MifareClassic.get(tag);
 
         try {
@@ -241,9 +241,12 @@ public class NFCTag {
             }
             //Toast.makeText(context, context.getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
             mfc.close();
+            return true;
         } catch (Exception fe) {
             //Toast.makeText(context, context.getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
             fe.printStackTrace();
+            System.out.println("ERROR AL LIMPIAR");
+            return false;
         }
     }
 
@@ -320,6 +323,7 @@ public class NFCTag {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("ERROR CAMBIAR LA CLAVE" + e.toString());
             return false;
         }
     }
@@ -368,6 +372,7 @@ public class NFCTag {
             return true;
         } catch (Exception fe) {
             fe.printStackTrace();
+            System.out.println("ERROR AL ESCRIBIR");
             return false;
         }
     }
@@ -390,6 +395,24 @@ public class NFCTag {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    boolean changeKeyDefault(Tag tag) {
+        MifareClassic mf = MifareClassic.get(tag);
+        try {
+            mf.connect();
+            for (int y = 0; y < 16; y++) {
+                if (mf.authenticateSectorWithKeyA(y, pw)) {
+                   mf.writeBlock(mf.sectorToBlock(y) + 3, def);
+                }
+            }
+            mf.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("ERROR CAMBIAR LA CLAVE" + e.toString());
             return false;
         }
     }

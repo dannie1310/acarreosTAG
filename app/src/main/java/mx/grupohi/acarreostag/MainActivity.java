@@ -203,10 +203,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(final Intent intent) {
         String mensaje;
-        int contador=0;
+        Integer contador=0;
         int tipo=0;
         String UID="";
-        Boolean result = true;
+        Boolean result = false;
 
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity
                     if (MifareClassic.class.getName().equals(t)) {
                         nfc = new NFCTag(myTag, this);
                         UID = nfc.idTag(myTag);
+                       // nfc.changeKeyDefault(myTag);
                         tipo=1;
                     }
                     else if (MifareUltralight.class.getName().equals(t)) {
@@ -249,19 +250,25 @@ public class MainActivity extends AppCompatActivity
                         if(tipo==1) {
                             mensaje = nfc.concatenar(idCamion, User.getIdProyecto(getApplicationContext()));
                             nfc.formatear(myTag);
-                            nfc.clean(myTag, 1);
+                            boolean limpiar = nfc.clean(myTag, 1);
                             if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
-                                nfc.changeKey(myTag);
-                                System.out.println(idCamion);
-                                System.out.println(Util.getIdCamion(nfc.readSector(myTag, 0,1)));
-                                System.out.println(contador);
-                                System.out.println(Integer.valueOf(nfc.readSector(myTag, 2, 8)));
+                               boolean cambio = nfc.changeKey(myTag);
+                               if (cambio == true) {
 
-                                if (Integer.valueOf(idCamion) != Util.getIdCamion(nfc.readSector(myTag, 0,1)) && contador != Integer.valueOf(nfc.readSector(myTag, 2, 8))){
-                                    result = false;
-                                }
-                            } else {
-                                Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
+                                   Integer idcamionTAG = Util.getIdCamion(nfc.readSector(myTag, 0, 1));
+                                   Integer contadorTAG = Integer.valueOf(nfc.readSector(myTag, 2, 8));
+
+                                   if ((Integer.valueOf(idCamion).equals(Integer.valueOf(idcamionTAG))) && (Integer.valueOf(contador).equals(Integer.valueOf(contadorTAG)))) {
+                                       result = true;
+                                   } else {
+                                       result = false;
+                                   }
+                               }
+                               else {
+                                   Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion_KEY), Toast.LENGTH_LONG).show();
+                               }
+                            }else {
+                                    Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                             }
                         }
                         if(tipo==2){
@@ -269,20 +276,28 @@ public class MainActivity extends AppCompatActivity
                             mensaje = nfcUltra.concatenar(idCamion, User.getIdProyecto(this));
 
                             if(nfcUltra.writePagina(myTag,4, mensaje) && nfcUltra.writeViaje(myTag,String.valueOf(contador))){
-                                System.out.println(Integer.valueOf(idCamion));
+                                /*System.out.println(Integer.valueOf(idCamion));
                                 System.out.println(Integer.valueOf(nfcUltra.readPage(myTag,4)));
                                 System.out.println(contador);
-                                System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 7)));
-                                if(Integer.valueOf(idCamion) != Integer.valueOf(nfcUltra.readPage(myTag,4)) && contador != Integer.valueOf(nfcUltra.readPage(myTag, 7))){
-                                    result = false;
+                                System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 7)));*/
+                                if ((Integer.valueOf(idCamion).equals(Integer.valueOf(nfcUltra.readPage(myTag, 4)))) && (contador.equals(Integer.valueOf(nfcUltra.readPage(myTag, 7))))) {
+                                    result = true;
+                                }
+                               else{
+                                    result = false; // checar si es este el problema
                                 }
                             } else {
                                 Toast.makeText(MainActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                             }
                         }
                         if(result){
-                            Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
-                            TagModel.update(UID, idCamion, getApplicationContext(), false);
+
+                            boolean resp = TagModel.update(UID, idCamion, getApplicationContext(), false);
+                            if(resp){
+                                Toast.makeText(MainActivity.this, getString(R.string.tag_configurado), Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(MainActivity.this, getString(R.string.error_camion_configurado), Toast.LENGTH_LONG).show();
+                            }
                         }else{
                             Toast.makeText(MainActivity.this, "No se pudo configurar el TAG, por favor intentelo de nuevo.", Toast.LENGTH_LONG).show();
 
@@ -290,7 +305,11 @@ public class MainActivity extends AppCompatActivity
 
 
                     } else {
-                        Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado), Toast.LENGTH_SHORT).show();
+                        String camion = TagModel.findCamion(UID, getApplicationContext());
+                        if(camion==null){
+                            camion = TagModel.findDisponibleCamion(UID,getApplicationContext());
+                        }
+                        Toast.makeText(MainActivity.this, getString(R.string.error_tag_configurado)+camion, Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(MainActivity.this, getString(R.string.error_tag_inexistente), Toast.LENGTH_SHORT).show();
@@ -379,6 +398,10 @@ public class MainActivity extends AppCompatActivity
             }
         } else if (id == R.id.nav_sync) {
             nextActivity();
+        } else if (id == R.id.nav_desc) {
+            Intent descarga = new Intent(this, DescargaActivity.class);
+            startActivity(descarga);
+
         } else if (id == R.id.nav_replace) {
             Intent intent = new Intent(MainActivity.this,  ReemplazarActivity.class);
             startActivity(intent);
