@@ -24,8 +24,8 @@ class User {
     private static SQLiteDatabase db;
     private static DBScaSqlite db_sca;
 
-    private String name;
-    private String pass;
+     String name;
+     String pass;
 
     User(Context context) {
         this.context = context;
@@ -80,6 +80,20 @@ class User {
         try{
             if (c.moveToFirst()) {
                 pass = c.getString(c.getColumnIndex("pass"));
+            }
+            return pass;
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+
+    String getUsr() {
+        db = db_sca.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT usr FROM user LIMIT 1", null);
+        try{
+            if (c.moveToFirst()) {
+                pass = c.getString(c.getColumnIndex("usr"));
             }
             return pass;
         } finally {

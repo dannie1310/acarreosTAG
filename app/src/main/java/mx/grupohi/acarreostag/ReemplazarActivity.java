@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,11 +157,11 @@ public class ReemplazarActivity extends AppCompatActivity
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         writeTagFilters = new IntentFilter[]{tagDetected};
 
-
         cambiarButton = (Button) findViewById(R.id.buttonCambiarTag);
         cambiarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(idCamion == "0") {
                     Toast.makeText(ReemplazarActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
                 } else {
@@ -250,7 +251,10 @@ public class ReemplazarActivity extends AppCompatActivity
         } else if (id == R.id.nav_sync) {
             Intent syncActivity = new Intent(ReemplazarActivity.this, SyncActivity.class);
             startActivity(syncActivity);
-        } else if (id == R.id.nav_inicio) {
+        } else if (id == R.id.nav_desc) {
+            Intent descarga = new Intent(this, DescargaActivity.class);
+            startActivity(descarga);
+        }  else if (id == R.id.nav_inicio) {
             Intent mainActivity = new Intent(this, MainActivity.class);
             startActivity(mainActivity);
         } else if (id == R.id.nav_replace) {
@@ -336,7 +340,7 @@ public class ReemplazarActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(final Intent intent) {
         String mensaje;
-        int contador = 0;
+        Integer contador = 0;
         int tipo = 0;
         String UID = "";
         Boolean result = false;
@@ -368,12 +372,10 @@ public class ReemplazarActivity extends AppCompatActivity
                             if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
                                 boolean cambio = nfc.changeKey(myTag);
                                 if (cambio == true) {
-                                    System.out.println(idCamion);
-                                    System.out.println(Util.getIdCamion(nfc.readSector(myTag, 0, 1)));
-                                    System.out.println(contador);
-                                    System.out.println(Integer.valueOf(nfc.readSector(myTag, 2, 8)));
+                                    Integer idcamionTAG = Util.getIdCamion(nfc.readSector(myTag, 0, 1));
+                                    Integer contadorTAG = Integer.valueOf(nfc.readSector(myTag, 2, 8));
 
-                                    if (Integer.valueOf(idCamion) == Util.getIdCamion(nfc.readSector(myTag, 0, 1)) && contador == Integer.valueOf(nfc.readSector(myTag, 2, 8))) {
+                                    if ((Integer.valueOf(idCamion).equals(Integer.valueOf(idcamionTAG))) && (Integer.valueOf(contador).equals(Integer.valueOf(contadorTAG)))) {
                                         result = true;
                                     } else {
                                         result = false;
@@ -393,7 +395,7 @@ public class ReemplazarActivity extends AppCompatActivity
                                 System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 4)));
                                 System.out.println(contador);
                                 System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 7)));
-                                if (Integer.valueOf(idCamion) == Integer.valueOf(nfcUltra.readPage(myTag, 4)) && contador == Integer.valueOf(nfcUltra.readPage(myTag, 7))) {
+                                if ((Integer.valueOf(idCamion).equals(Integer.valueOf(nfcUltra.readPage(myTag, 4)))) && (contador.equals(Integer.valueOf(nfcUltra.readPage(myTag, 7))))) {
                                     result = true;
                                 } else {
                                     result = false; // checar si es este el problema

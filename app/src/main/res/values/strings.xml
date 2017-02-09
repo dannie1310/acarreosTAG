@@ -43,6 +43,7 @@
     <string name="formatear">Se ha formateado con llaves privadas GHI </string>
     <string name="title_activity_reemplazar">Reemplazar TAG</string>
 
+    <string name="title_activity_descarga">Descarga de Catálogos</string>
     <string name="action_settings">Settings</string>
 
 </resources>
