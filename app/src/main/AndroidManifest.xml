@@ -46,6 +46,10 @@
             android:name=".DescargaActivity"
             android:label="@string/title_activity_descarga"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CambioClaveActivity"
+            android:label="@string/title_activity_cambio_clave"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

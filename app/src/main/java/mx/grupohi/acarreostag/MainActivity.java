@@ -409,7 +409,11 @@ public class MainActivity extends AppCompatActivity
             Intent intent = getIntent();
             finish();
             startActivity(intent);
+        } else if(id == R.id.nav_cambio){
+            Intent intent = new Intent(MainActivity.this,  CambioClaveActivity.class);
+            startActivity(intent);
         }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;

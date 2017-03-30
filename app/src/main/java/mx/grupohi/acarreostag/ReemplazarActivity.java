@@ -259,6 +259,9 @@ public class ReemplazarActivity extends AppCompatActivity
             startActivity(mainActivity);
         } else if (id == R.id.nav_replace) {
             startActivity(getIntent());
+        }  else if(id == R.id.nav_cambio){
+            Intent intent = new Intent(ReemplazarActivity.this,  CambioClaveActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
