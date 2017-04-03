@@ -63,7 +63,7 @@ public class CambioClaveActivity extends AppCompatActivity
             public void onClick(View v) {
 
                 if(!checar()){
-                    if(uss.getText().toString().toUpperCase().equals(usuario.usr.toUpperCase()) && actual.getText().toString().equals(usuario.pass)) {
+                    if(uss.getText().toString().toUpperCase().equals(usuario.user.toUpperCase()) && actual.getText().toString().equals(usuario.pass)) {
 
                         if (pass.getText().toString().length()>= 8 && passConfirmacion.getText().toString().length()>=8){
 

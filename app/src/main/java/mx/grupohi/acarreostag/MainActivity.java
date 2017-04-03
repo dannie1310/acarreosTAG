@@ -40,6 +40,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -107,6 +108,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         user = new User(this);
+
+        try {
+            Util.copyDataBase(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         loginActivity = new Intent(this, LoginActivity.class);
         if(drawer != null)

@@ -57,5 +57,6 @@
     <string name="prompt_pass">Contraseña Nueva.</string>
     <string name="prompt_passwordConfirma">Confirmar Contraseña Nueva.</string>
     <string name="cambio">Cambiar Contraseña</string>
+    <string name="err_permisos">Debe aceptar los permisos de la aplicación.</string>
 
 </resources>
