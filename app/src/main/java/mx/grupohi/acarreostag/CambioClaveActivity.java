@@ -285,7 +285,7 @@ public class CambioClaveActivity extends AppCompatActivity
             values.clear();
 
             values.put("metodo", "ActualizarAcceso");
-            values.put("usr", usuario.usr);
+            values.put("usr", usuario.user);
             values.put("pass", usuario.pass);
             values.put("idusuario", usuario.getId());
             values.put("bd", usuario.base);
