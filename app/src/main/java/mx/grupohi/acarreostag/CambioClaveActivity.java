@@ -58,7 +58,7 @@ public class CambioClaveActivity extends AppCompatActivity
 
         usuario = new User(this);
         usuario = usuario.getUsuario();
-        us_sesion = usuario.usr.toUpperCase();
+        us_sesion = usuario.user.toUpperCase();
         uss = (EditText) findViewById(R.id.user);
         pass = (EditText) findViewById(R.id.pass);
         passConfirmacion = (EditText)findViewById(R.id.passCambio);
@@ -145,12 +145,9 @@ public class CambioClaveActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private boolean checar() {
