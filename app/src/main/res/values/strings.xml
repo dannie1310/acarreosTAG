@@ -11,7 +11,6 @@
     <string name="error_internet">Por favor habilite su conexión a Internet para poder iniciar sesión</string>
     <string name="URL">http://sca.grupohi.mx/android20151106.php</string>
     <string name="general_exception">Por favor verifique su conexión a internet e intentelo nuevamente</string>
-    <string name="title_activity_main">Configurar TAG</string>
     <string name="title_login_activity">Iniciar Sesión</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -32,7 +31,6 @@
     <string name="tag_configurado">TAG configurado correctamente</string>
     <string name="error_camion_configurado">Camión ha sido configurado. Favor de sincronizar. </string>
     <string name="tag_remplazo">Se Reemplazo el TAG correctamente</string>
-    <string name="title_activity_sync">SINCRONIZAR DATOS</string>
     <string name="mnetodo_sync">capturaConfiguracion</string>
     <string name="error_no_sync">¡Error! No se pudo realizar la soncronización</string>
     <string name="error_no_nfc">Su dispositivo no posee lector NFC. No se puede ejecutar esta aplicación.</string>
@@ -41,15 +39,12 @@
     <string name="def">FFFFFFFFFFFFFF078069FFFFFFFFFFFF</string>
     <string name="password">773A7DB80405</string>
     <string name="formatear">Se ha formateado con llaves privadas GHI </string>
-    <string name="title_activity_reemplazar">Reemplazar TAG</string>
 
-    <string name="title_activity_descarga">Descarga de Catálogos</string>
     <string name="action_settings">Settings</string>
 
     <string name="error_uss">Error usuario NO coincide con la sesión.</string>
     <string name="error_anter">Error contraseña NO coincide con la sesión.</string>
     <string name="action_chance">Cambio de Contraseña</string>
-    <string name="title_activity_cambio_clave">Cambio de Clave de Acceso</string>
     <string name="error_pass">Las contraseñas no coinciden. Intente de nuevo.</string>
     <string name="prompt_passAnterior">Escriba la Contraseña Actual.</string>
     <string name="error_field_requiredpass">La contraseña debe ser mayor a 8 digitos.</string>
@@ -58,5 +53,17 @@
     <string name="prompt_passwordConfirma">Confirmar Contraseña Nueva.</string>
     <string name="cambio">Cambiar Contraseña</string>
     <string name="err_permisos">Debe aceptar los permisos de la aplicación.</string>
+
+    <!--Titulos-->
+    <string name="title_group_registro">Configuración de TAG para Camión</string>
+    <string name="title_activity_main">Asignar TAG</string>
+    <string name="title_activity_reemplazar">Reemplazar TAG</string>
+    <string name="title_activity_main_menu">Asignar</string>
+    <string name="title_activity_reemplazar_menu">Reemplazar</string>
+    <string name="title_activity_descarga">Descargar Catálogos</string>
+    <string name="title_activity_sync">Enviar Configuraciones</string>
+    <string name="title_group_sesion">Sesión Actual</string>
+    <string name="title_activity_cambio_clave">Cambiar Clave de Acceso</string>
+    <string name="title_activity_cerrar_sesion">Cerrar Sesión</string>
 
 </resources>

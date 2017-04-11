@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:title="@string/title_group_registro">
+        <menu>
+            <item
+                android:title="@string/title_activity_main_menu"
+                android:id="@+id/nav_inicio"
+                android:icon="@drawable/ic_action_name"/>
+
+            <item
+                android:title="@string/title_activity_reemplazar_menu"
+                android:id="@+id/nav_replace"
+                android:icon="@mipmap/ic_replace"/>
+        </menu>
+    </item>
+
     <group android:checkableBehavior="single">
+
         <item
-            android:title="Inicio"
-            android:id="@+id/nav_inicio"
-            android:icon="@drawable/ic_action_home"/>
-        <item
-            android:id="@+id/nav_sync"
-            android:title="Sincronizar"
-            android:icon="@drawable/ic_action_sync" />
-        <item
-            android:title="Reemplazar TAG"
-            android:id="@+id/nav_replace"
-            android:icon="@mipmap/ic_replace"/>
-        <item
-            android:title="Descarga de Catálogos"
+            android:title="@string/title_activity_descarga"
             android:id="@+id/nav_desc"
             android:icon="@drawable/ic_action_desc"/>
+        <item
+            android:id="@+id/nav_sync"
+            android:title="@string/title_activity_sync"
+            android:icon="@drawable/ic_action_sync" />
 
     </group>
 
-    <item android:title="Sesión Actual">
+    <item android:title="@string/title_group_sesion">
         <menu>
             <item
                 android:id="@+id/nav_cambio"
                 android:icon="@drawable/ic_action_cambio"
-                android:title="Cambiar Clave de Acceso" />
+                android:title="@string/title_activity_cambio_clave" />
             <item
                 android:icon="@android:drawable/ic_menu_close_clear_cancel"
-                android:title="Cerrar Sesión"
+                android:title="@string/title_activity_cerrar_sesion"
                 android:id="@+id/nav_logout" />
         </menu>
     </item>
