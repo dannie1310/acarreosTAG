@@ -102,10 +102,10 @@ public class Util {
         return  new JSONObject(response);
     }
 
-    static Integer getIdCamion(String string) {
+    static Integer getIdCamion(String string, int valorcadena) {
 
         try {
-            String cadena= string.substring(0,4);
+            String cadena= string.substring(0,valorcadena);
             Integer result = Integer.valueOf(cadena);
             if (result != null) {
                 return result;

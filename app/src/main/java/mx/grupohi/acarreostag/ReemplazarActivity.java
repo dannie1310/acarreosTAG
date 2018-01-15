@@ -368,19 +368,17 @@ public class ReemplazarActivity extends AppCompatActivity
 
                 if(TagModel.exists(UID, getApplicationContext())) {
                     if (TagModel.tagDisponible(UID, getApplicationContext())) {
-                        contador = camion.getNumeroViajes(Integer.valueOf(idCamion));
                         if (tipo == 1) {
                             mensaje = nfc.concatenar(idCamion, User.getIdProyecto(getApplicationContext()));
                             nfc.formatear(myTag);
                             boolean limpiar = nfc.clean(myTag, 1);
                             System.out.println("LIMPIAR " + limpiar);
-                            if (nfc.writeSector(myTag, 0, 1, mensaje) && nfc.writeSector(myTag, 2, 8, String.valueOf(contador))) {
+                            if (nfc.writeSector(myTag, 0, 1, mensaje)) {
                                 boolean cambio = nfc.changeKey(myTag);
                                 if (cambio == true) {
-                                    Integer idcamionTAG = Util.getIdCamion(nfc.readSector(myTag, 0, 1));
-                                    Integer contadorTAG = Integer.valueOf(nfc.readSector(myTag, 2, 8));
+                                    Integer idcamionTAG = Util.getIdCamion(nfc.readSector(myTag, 0, 1),idCamion.length());
 
-                                    if ((Integer.valueOf(idCamion).equals(Integer.valueOf(idcamionTAG))) && (Integer.valueOf(contador).equals(Integer.valueOf(contadorTAG)))) {
+                                    if ((Integer.valueOf(idCamion).equals(Integer.valueOf(idcamionTAG)))) {
                                         result = true;
                                     } else {
                                         result = false;
