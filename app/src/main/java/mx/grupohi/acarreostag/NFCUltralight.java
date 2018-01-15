@@ -65,7 +65,7 @@ public class NFCUltralight {
         return aux;
     }
 
-    public boolean writePagina(Tag mytag, int page, String mensaje ){
+    public boolean writePagina(Tag mytag, int page, String mensaje){
         byte[] value =  mensaje.getBytes();
         byte[] aux =  new byte[4];
         MifareUltralight mf= MifareUltralight.get(mytag);
@@ -216,6 +216,33 @@ public class NFCUltralight {
             aux1= 0 + aux1;
         }
         resultado= aux+aux1;
+        return resultado;
+    }
+
+    String concatenarCamion(String idCamion){
+        String resultado="";
+        String aux =idCamion;
+        if(idCamion.length() >= 5){
+            for(int i=idCamion.length(); i<8;i++){
+                aux= 0 + aux;
+            }
+        }else {
+            for (int i = idCamion.length(); i < 4; i++) {
+                aux = 0 + aux;
+            }
+        }
+        resultado= aux;
+        return resultado;
+    }
+
+    String concatenarProyecto(String idProyecto){
+        String resultado="";
+        String aux =idProyecto;
+
+        for(int i=idProyecto.length(); i<4;i++){
+            aux= 0 + aux;
+        }
+        resultado= aux;
         return resultado;
     }
 }

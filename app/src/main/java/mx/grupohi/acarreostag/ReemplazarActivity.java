@@ -347,6 +347,8 @@ public class ReemplazarActivity extends AppCompatActivity
         int tipo = 0;
         String UID = "";
         Boolean result = false;
+        String datos;
+        String datosextra;
         if(writeMode) {
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
                 Tag myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -392,19 +394,29 @@ public class ReemplazarActivity extends AppCompatActivity
                         }
                         if (tipo == 2) {
                             nfcUltra.formateo(myTag);
-                            mensaje = nfcUltra.concatenar(idCamion, User.getIdProyecto(this));
-                            if (nfcUltra.writePagina(myTag, 4, mensaje) && nfcUltra.writeViaje(myTag, String.valueOf(contador))) {
-                                System.out.println(Integer.valueOf(idCamion));
-                                System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 4)));
-                                System.out.println(contador);
-                                System.out.println(Integer.valueOf(nfcUltra.readPage(myTag, 7)));
-                                if ((Integer.valueOf(idCamion).equals(Integer.valueOf(nfcUltra.readPage(myTag, 4)))) && (contador.equals(Integer.valueOf(nfcUltra.readPage(myTag, 7))))) {
-                                    result = true;
-                                } else {
-                                    result = false; // checar si es este el problema
+                            datos = nfcUltra.concatenarCamion(idCamion);
+                            if(datos.length() > 4) {
+                                mensaje = nfcUltra.concatenarProyecto(User.getIdProyecto(this));
+                                datosextra = datos.substring(4, datos.length());
+                                datos = datos.substring(0,4);
+
+                                if (nfcUltra.writePagina(myTag, 4, datos) && nfcUltra.writePagina(myTag, 5, datosextra) && nfcUltra.writePagina(myTag, 6, mensaje)) {
+                                    datos = nfcUltra.readPage(myTag, 4) + nfcUltra.readPage(myTag, 5);
+                                    if ((Integer.valueOf(idCamion).equals(Integer.valueOf(datos)))) {
+                                        result = true;
+                                    }
+                                }else {
+                                    Toast.makeText(ReemplazarActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
                                 }
-                            } else {
-                                Toast.makeText(ReemplazarActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
+                            }else{
+                                mensaje = nfcUltra.concatenar(idCamion, User.getIdProyecto(this));
+                                if (nfcUltra.writePagina(myTag, 4, mensaje)) {
+                                    if ((Integer.valueOf(idCamion).equals(Integer.valueOf(nfcUltra.readPage(myTag, 4))))) {
+                                        result = true;
+                                    }
+                                }else {
+                                    Toast.makeText(ReemplazarActivity.this, getString(R.string.error_tag_comunicacion), Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
 
