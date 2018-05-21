@@ -164,7 +164,9 @@ public class ReemplazarActivity extends AppCompatActivity
 
                 if(idCamion == "0") {
                     Toast.makeText(ReemplazarActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
-                } else {
+                }else if(idCamion.length() > 6){
+                    Toast.makeText(ReemplazarActivity.this, getString(R.string.error_camion_sobrepasa_longitud), Toast.LENGTH_SHORT).show();
+                }else {
                     new android.app.AlertDialog.Builder(ReemplazarActivity.this)
                             .setTitle("INFORMACIÓN")
                             .setMessage("Una vez reemplazado el TAG del camión " + camion.economico + " se cambiara la configuración actual.\n ¡No olvide sincronizar los cambios para que el reemplazo tenga efecto!")

@@ -196,6 +196,8 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 if(idCamion == "0")  {
                     Toast.makeText(MainActivity.this, getString(R.string.error_camion_no_selected), Toast.LENGTH_SHORT).show();
+                }else if(idCamion.length() > 6){
+                    Toast.makeText(MainActivity.this, getString(R.string.error_camion_sobrepasa_longitud), Toast.LENGTH_SHORT).show();
                 } else {
                     checkNfcEnabled();
                     WriteModeOn();

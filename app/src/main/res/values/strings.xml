@@ -65,5 +65,6 @@
     <string name="title_group_sesion">Sesión Actual</string>
     <string name="title_activity_cambio_clave">Cambiar Clave de Acceso</string>
     <string name="title_activity_cerrar_sesion">Cerrar Sesión</string>
+    <string name="error_camion_sobrepasa_longitud">Reporte al encargado de Sistemas, La longitud del camion sobrepasa lo permitido.</string>
 
 </resources>
