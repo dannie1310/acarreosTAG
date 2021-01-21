@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/acarreosTAG.iml" filepath="$PROJECT_DIR$/acarreosTAG.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/acarreosTAG.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/acarreosTAG.app.iml" />
     </modules>
   </component>
 </project>
