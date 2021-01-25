@@ -29,6 +29,9 @@ public class DescargaActivity extends AppCompatActivity {
 
     private DescargaCatalogos descargaCatalogos = null;
 
+    public String URL_API = "http://192.168.0.183:8080/";
+    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +70,7 @@ public class DescargaActivity extends AppCompatActivity {
             this.context = context;
             this.progressDialog = progressDialog;
             usuario = new User(context);
+            usuario = usuario.getUsuario();
             db_sca = new DBScaSqlite(context, "sca", null, 1);
         }
 
@@ -80,7 +84,7 @@ public class DescargaActivity extends AppCompatActivity {
             data.put("usr", usuario.getUsr());
             data.put("pass", usuario.getPass());
             try {
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
+                URL url = new URL(URL_API + "api/acarreos/tag/catalogo?access_token=" + usuario.token);
                 JSON = Util.JsonHttp(url, data);
             } catch (Exception e) {
                 e.printStackTrace();

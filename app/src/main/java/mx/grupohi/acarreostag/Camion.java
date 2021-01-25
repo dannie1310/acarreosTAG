@@ -57,7 +57,7 @@ class Camion {
         this.data.put("largo", data.getString("largo"));
         this.data.put("alto", data.getString("alto"));
         this.data.put("economico", data.getString("economico"));
-        this.data.put("numero_viajes", data.getString("numero_viajes"));
+        this.data.put("numero_viajes", 0);
 
         db = db_sca.getWritableDatabase();
         try{

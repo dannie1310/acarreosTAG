@@ -31,6 +31,7 @@ class User {
     Integer idUsuario;
     Integer idProyecto;
     String descripcionBaseDatos;
+    String token;
 
     User(Context context) {
         this.context = context;
@@ -49,7 +50,7 @@ class User {
                 this.descripcionBaseDatos = c.getString(c.getColumnIndex("descripcion_database"));
                 this.user = c.getString(c.getColumnIndex("usr"));
                 this.pass = c.getString(c.getColumnIndex("pass"));
-
+                this.token = c.getString(c.getColumnIndex("token"));
                 return this;
             } else {
                 return null;
