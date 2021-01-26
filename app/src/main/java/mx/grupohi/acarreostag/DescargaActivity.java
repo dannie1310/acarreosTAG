@@ -80,9 +80,8 @@ public class DescargaActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
 
             ContentValues data = new ContentValues();
-            data.put("metodo", "ConfDATA");
-            data.put("usr", usuario.getUsr());
-            data.put("pass", usuario.getPass());
+            data.put("usuario", usuario.getUsr());
+            data.put("clave", usuario.getPass());
             try {
                 URL url = new URL(URL_API + "api/acarreos/tag/catalogo?access_token=" + usuario.token);
                 JSON = Util.JsonHttp(url, data);

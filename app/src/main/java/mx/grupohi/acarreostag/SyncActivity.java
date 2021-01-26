@@ -27,6 +27,9 @@ public class SyncActivity extends AppCompatActivity {
     private JSONObject JSON;
     private Intent mainActivity;
 
+    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    public String URL_API = "http://192.168.0.183:8080/";
+
     private User user;
 
     @Override
@@ -36,6 +39,7 @@ public class SyncActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sync);
 
         user = new User(getApplicationContext());
+        user = user.getUsuario();
         mainActivity = new Intent(this, MainActivity.class);
 
         syncButton = (Button) findViewById(R.id.SyncButton);
@@ -72,14 +76,13 @@ public class SyncActivity extends AppCompatActivity {
 
             ContentValues values = new ContentValues();
 
-            values.put("metodo", getString(R.string.mnetodo_sync));
-            values.put("usr", user.getUser(getApplicationContext()));
-            values.put("pass", user.getPass());
+            values.put("usuario", user.getUser(getApplicationContext()));
+            values.put("clave", user.getPass());
             values.put("bd", user.getBaseDatos(getApplicationContext()));
             values.put("tag_camion", String.valueOf(TagModel.getJSON(getApplicationContext())));
 
             try {
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
+                URL url = new URL(URL_API  + "api/acarreos/tag/registrar?access_token=" + user.token);
                 JSON = Util.JsonHttp(url, values);
             } catch (Exception e) {
                 e.printStackTrace();

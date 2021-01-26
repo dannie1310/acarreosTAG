@@ -48,6 +48,8 @@ public class CambioClaveActivity extends AppCompatActivity
     private String us_sesion;
     private String us_escrito;
     CambioClave c;
+    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    public String URL_API = "http://192.168.0.183:8080/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -284,9 +286,8 @@ public class CambioClaveActivity extends AppCompatActivity
             Boolean resp = null;
             values.clear();
 
-            values.put("metodo", "ActualizarAcceso");
-            values.put("usr", usuario.user);
-            values.put("pass", usuario.pass);
+            values.put("usuario", usuario.user);
+            values.put("clave", usuario.pass);
             values.put("idusuario", usuario.getId());
             values.put("bd", usuario.base);
             values.put("IMEI", IMEI);
@@ -295,16 +296,16 @@ public class CambioClaveActivity extends AppCompatActivity
 
             try {
 
-                URL url = new URL("http://sca.grupohi.mx/android20160923.php");
+                URL url = new URL(URL_API + "api/acarreos/tag/cambioClave?access_token=" + usuario.token);
                 JSONVIAJES = HttpConnection.POST(url, values);
                 Log.i("josn", String.valueOf(JSONVIAJES));
                 Log.i("jsonviajes:  ", String.valueOf(values));
                 if (JSONVIAJES.has("error")) {
-                    //Toast.makeText(context, (String) JSONVIAJES.get("error"), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, (String) JSONVIAJES.get("error"), Toast.LENGTH_SHORT).show();
                     resp = false;
                 } else if (JSONVIAJES.has("msj")) {
                     User.updatePass(NuevaClave, context);
-                    //Toast.makeText(context, (String) JSONVIAJES.get("msj"), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, (String) JSONVIAJES.get("msj"), Toast.LENGTH_LONG).show();
                     resp = true;
                 }
 
