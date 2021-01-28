@@ -27,8 +27,8 @@ public class SyncActivity extends AppCompatActivity {
     private JSONObject JSON;
     private Intent mainActivity;
 
-    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
-    public String URL_API = "http://192.168.0.183:8080/";
+    public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    //public String URL_API = "http://192.168.0.183:8080/";
 
     private User user;
 

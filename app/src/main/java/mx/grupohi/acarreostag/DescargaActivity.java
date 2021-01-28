@@ -29,8 +29,8 @@ public class DescargaActivity extends AppCompatActivity {
 
     private DescargaCatalogos descargaCatalogos = null;
 
-    public String URL_API = "http://192.168.0.183:8080/";
-    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    //public String URL_API = "http://192.168.0.183:8080/";
+    public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

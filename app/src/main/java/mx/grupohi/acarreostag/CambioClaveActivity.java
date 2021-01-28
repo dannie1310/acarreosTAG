@@ -48,8 +48,8 @@ public class CambioClaveActivity extends AppCompatActivity
     private String us_sesion;
     private String us_escrito;
     CambioClave c;
-    //public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
-    public String URL_API = "http://192.168.0.183:8080/";
+    public String URL_API = "http://portal-aplicaciones.grupohi.mx/";
+    //public String URL_API = "http://192.168.0.183:8080/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
