@@ -301,11 +301,11 @@ public class CambioClaveActivity extends AppCompatActivity
                 Log.i("josn", String.valueOf(JSONVIAJES));
                 Log.i("jsonviajes:  ", String.valueOf(values));
                 if (JSONVIAJES.has("error")) {
-                    Toast.makeText(context, (String) JSONVIAJES.get("error"), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, (String) JSONVIAJES.get("error"), Toast.LENGTH_SHORT).show();
                     resp = false;
                 } else if (JSONVIAJES.has("msj")) {
                     User.updatePass(NuevaClave, context);
-                    Toast.makeText(context, (String) JSONVIAJES.get("msj"), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, (String) JSONVIAJES.get("msj"), Toast.LENGTH_LONG).show();
                     resp = true;
                 }
 
